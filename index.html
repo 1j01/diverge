@@ -28,7 +28,7 @@
 			// type to choose a path (creating one if it doesn't exist)
 			// or browse paths with the mouse (/pen/other pointer, VR etc.)
 			// similar paths that don't quite match could be lined up like magnetic strings
-			// i.e. "The quick fox jumped at the oppertunity"
+			// i.e. "The quick fox jumped at the opportunity"
 			// and  "The qui   fox jumps     the
 			//              c n         over     lazy dog
 			//             k   w
@@ -52,7 +52,6 @@
 			var cursor_visible = true;
 			
 			var previous_text = "";
-			// var previous_selection_start = 0;
 			var previous_selection_end = 0;
 			
 			function load() {
@@ -133,15 +132,14 @@
 				ctx.fillText(inside, before_width, 0);
 				ctx.fillText(after, before_width + inside_width, 0);
 				if (cursor_visible) {
-					// console.log(start_pos, end_pos)
-					// if (start_pos < end_pos) {
-					// 	ctx.fillRect(before_width, -font_size, 2, font_size);
-					// } else {
-					// 	ctx.fillRect(before_width + inside_width, -font_size, 2, font_size);
-					// }
 					if (end_pos === start_pos) {
 						ctx.fillRect(before_width, -font_size, 2, line_height);
 					}
+					// if (input.selectionDirection === "backward") {
+					// 	ctx.fillRect(before_width, -font_size, 2, line_height);
+					// } else if (input.selectionDirection === "forward") {
+					// 	ctx.fillRect(before_width + inside_width, -font_size, 2, line_height);
+					// }
 				}
 				for (var i = 0; i < paths.length; i++) {
 					var path = paths[i];
@@ -152,7 +150,6 @@
 				
 				
 				previous_text = text;
-				// previous_selection_start = start_pos;
 				previous_selection_end = end_pos;
 				
 			}
