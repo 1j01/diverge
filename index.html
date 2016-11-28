@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Diverge</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				margin: 0;
+				overflow: hidden;
+			}
+			#canvas {
+				position: absolute;
+				left: 0;
+				top: 0;
+				z-index: 1;
+			}
+			#input {
+				opacity: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<input id="input" type="text" autofocus/>
+		<canvas id="canvas"></canvas>
+		<script>
+			// display diverging paths
+			// type to choose a path (creating one if it doesn't exist)
+			// or browse paths with the mouse (/pen/other pointer, VR etc.)
+			// similar paths that don't quite match could be lined up like magnetic strings
+			// i.e. "The quick fox jumped at the oppertunity"
+			// and  "The qui   fox jumps     the
+			//              c n         over     lazy dog
+			//             k   w
+			//              bro
+			// color/style text based on whether it exists yet/existed previously, and/or author
+			// maybe italics/low opacity for nonexistant text
+			// could use chromaticity for path disambiguation where paths join/diverge
+			// there could actually be a useful tool somewhere in this idea space
+			// perhaps in examining/making drafts, maybe not of books but of smaller amounts of text
+			
+			var input = document.getElementById("input");
+			var canvas = document.getElementById("canvas");
+			var ctx = canvas.getContext("2d");
+			
+			var paths = [];
+			var current_path = [];
+			// var selection = {start: 
+			var font_size = 20;
+			
+			function resize() {
+				var width = window.innerWidth;
+				var height = window.innerHeight;
+				if (canvas.width !== width) canvas.width = width;
+				if (canvas.height !== height) canvas.height = height;
+			}
+
+			function animate(t) {
+				requestAnimationFrame(animate);
+				resize();
+				
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				ctx.font = font_size + "px Arial";
+				
+				var str = input.value;
+				
+				var start_pos = input.selectionStart;
+				var end_pos = input.selectionEnd;
+				
+				var lower_pos = Math.min(start_pos, end_pos);
+				var upper_pos = Math.max(start_pos, end_pos);
+				
+				var before = str.slice(0, lower_pos);
+				var inside = str.slice(lower_pos, end_pos);
+				var after = str.slice(end_pos);
+				
+				var before_width = ctx.measureText(before).width;
+				var inside_width = ctx.measureText(inside).width;
+				var after_width = ctx.measureText(after).width;
+				
+				// ctx.fillText(input.value, 50, 50);
+				ctx.save();
+				ctx.translate(50, 50);
+				ctx.fillStyle = "rgba(0, 100, 255, 0.1)";
+				ctx.fillRect(before_width, -font_size, inside_width, font_size);
+				ctx.fillStyle = "black";
+				ctx.fillText(before, 0, 0);
+				ctx.fillText(inside, before_width, 0);
+				ctx.fillText(after, before_width + inside_width, 0);
+				ctx.fillRect(before_width, -font_size, 2, font_size);
+				ctx.restore();
+
+			}
+
+			function fullscreen() {
+				if (container.requestFullscreen) {
+					container.requestFullscreen();
+				} else if (container.msRequestFullscreen) {
+					container.msRequestFullscreen();
+				} else if (container.mozRequestFullScreen) {
+					container.mozRequestFullScreen();
+				} else if (container.webkitRequestFullscreen) {
+					container.webkitRequestFullscreen();
+				}
+			}
+			
+			// window.addEventListener("resize", resize, false);
+			// resize();
+			animate();
+			canvas.addEventListener("mousedown", function(e) {
+				e.preventDefault();
+				input.focus();
+			}, false);
+			
+		</script>
+	</body>
+</html>
