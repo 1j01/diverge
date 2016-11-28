@@ -55,6 +55,33 @@
 			// var previous_selection_start = 0;
 			var previous_selection_end = 0;
 			
+			function load() {
+				var data = {paths: [
+					"That quick brown fox was jumping all around",
+					"The quick brown fox was jumping all around",
+					"The quick brown fox jumps over lazydawgs",
+					"The quick brown fox jumps over a lazy dog",
+					"Sphinx of black quartz, judge my vow."
+				]};
+				for (var i = 0; i < data.paths.length; i++) {
+					var path_str = data.paths[i];
+					var path = [];
+					path.str = path_str;
+					for (var j = 0; j < path_str.length; j++) {
+						path.push({
+							c: path_str[j],
+							x: 0,
+							y: 0,
+						});
+					}
+					paths.push(path);
+				}
+			}
+			
+			function save() {
+				
+			}
+			
 			function resize() {
 				var width = window.innerWidth;
 				var height = window.innerHeight;
@@ -116,7 +143,13 @@
 						ctx.fillRect(before_width, -font_size, 2, line_height);
 					}
 				}
+				for (var i = 0; i < paths.length; i++) {
+					var path = paths[i];
+					ctx.translate(0, line_height);
+					ctx.fillText(path.str, 0, 0);
+				}
 				ctx.restore();
+				
 				
 				previous_text = text;
 				// previous_selection_start = start_pos;
@@ -136,6 +169,7 @@
 				}
 			}
 			
+			load();
 			animate();
 			canvas.addEventListener("mousedown", function(e) {
 				e.preventDefault();
