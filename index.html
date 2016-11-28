@@ -47,6 +47,7 @@
 			var current_path = [];
 			
 			var font_size = 20;
+			var line_height = 25;
 			var cursor_blink_timer = 0;
 			var cursor_visible = true;
 			
@@ -66,7 +67,7 @@
 				resize();
 				
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				ctx.font = font_size + "px Arial";
+				ctx.font = font_size + "px/" + line_height + "px Arial";
 				
 				var text = input.value;
 				
@@ -80,6 +81,8 @@
 				var inside = text.slice(lower_pos, end_pos);
 				var after = text.slice(end_pos);
 				
+				// var all_text_metrics = ctx.measureText(text);
+				// console.log(all_text_metrics.fontBoundingBoxDescent);
 				var before_width = ctx.measureText(before).width;
 				var inside_width = ctx.measureText(inside).width;
 				var after_width = ctx.measureText(after).width;
@@ -97,7 +100,7 @@
 				ctx.save();
 				ctx.translate(50, 50);
 				ctx.fillStyle = "rgba(0, 120, 255, 0.2)";
-				ctx.fillRect(before_width, -font_size, inside_width, font_size);
+				ctx.fillRect(before_width, -font_size, inside_width, line_height);
 				ctx.fillStyle = "black";
 				ctx.fillText(before, 0, 0);
 				ctx.fillText(inside, before_width, 0);
@@ -110,7 +113,7 @@
 					// 	ctx.fillRect(before_width + inside_width, -font_size, 2, font_size);
 					// }
 					if (end_pos === start_pos) {
-						ctx.fillRect(before_width, -font_size, 2, font_size);
+						ctx.fillRect(before_width, -font_size, 2, line_height);
 					}
 				}
 				ctx.restore();
