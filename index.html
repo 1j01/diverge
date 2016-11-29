@@ -38,6 +38,8 @@
 			var paths = [];
 			var current_path = [];
 			
+			var view_center_x = 0;
+			
 			var font_size = 20;
 			var line_height = 25;
 			var cursor_blink_timer = 0;
@@ -88,6 +90,15 @@
 					"Why won't an arithmetic diameter trash the gas?",
 					"The ax hails the modest justice.",
 					"A sushi-centric motif, but with so many pairs of chopsticks, and only one piece of sushi",
+					"What is this trying to say? There are ways of thinking that don't exist yet",
+					"What is this trying to say? There are ways of thinking that haven't been invented",
+					"What is this trying to say? There are ways of thinking that haven't been discovered",
+					"What is this trying to say? There are ways of thinking that haven't been thought of",
+					"What is this trying to say? There are ways of thinking that haven't been thought of yet",
+					"What are you trying to say?",
+					"Who are you?",
+					"Who *are* YOU?",
+					"Who *are* \"YOU\"?",
 					"alphabeta-magneta",
 					"alphabetic-magnetic",
 					"alphabetically magnetic"
@@ -129,6 +140,7 @@
 				
 				var start_pos = input.selectionStart;
 				var end_pos = input.selectionEnd;
+				// NOTE: these are already min and max
 				
 				var lower_pos = Math.min(start_pos, end_pos);
 				var upper_pos = Math.max(start_pos, end_pos);
@@ -153,13 +165,19 @@
 					cursor_blink_timer = 0;
 				}
 				
+				// TODO: center the controlled end of the selection
+				view_center_x += (before_width - view_center_x) / 20;
+				
 				ctx.save();
-				ctx.translate(50, 50);
-				ctx.fillStyle = "rgba(0, 120, 255, 0.2)";
+				ctx.translate(canvas.width/2, canvas.height/2);
+				ctx.translate(-view_center_x, 0);
+				ctx.fillStyle = "rgba(0, 120, 255, 0.56)";
 				ctx.fillRect(before_width, -font_size, inside_width, line_height);
 				ctx.fillStyle = "black";
 				ctx.fillText(before, 0, 0);
+				ctx.fillStyle = "white";
 				ctx.fillText(inside, before_width, 0);
+				ctx.fillStyle = "black";
 				ctx.fillText(after, before_width + inside_width, 0);
 				if (cursor_visible) {
 					if (end_pos === start_pos) {
@@ -178,19 +196,19 @@
 				// }
 				ctx.restore();
 				
-				for (var i = 0; i < paths.length; i++) {
-					var path = paths[i];
-					var place_x = 50;
-					var place_y = 50 + i * line_height;
-					for (var j = 0; j < path.length; j++) {
-						var char = path[j];
-						var glyph = get_glyph(char.c);
-						ctx.drawImage(glyph, char.x, char.y);
-						char.x += (place_x - char.x) / (20 + Math.sin(j) * 10);
-						char.y += (place_y - char.y) / (20 + Math.cos(j) * 10);
-						place_x += glyph.width;
-					}
-				}
+				// for (var i = 0; i < paths.length; i++) {
+				// 	var path = paths[i];
+				// 	var place_x = 50;
+				// 	var place_y = 50 + i * line_height;
+				// 	for (var j = 0; j < path.length; j++) {
+				// 		var char = path[j];
+				// 		var glyph = get_glyph(char.c);
+				// 		ctx.drawImage(glyph, char.x, char.y);
+				// 		char.x += (place_x - char.x) / 20;
+				// 		char.y += (place_y - char.y) / 20;
+				// 		place_x += glyph.width;
+				// 	}
+				// }
 				
 				previous_text = text;
 				previous_selection_end = end_pos;
