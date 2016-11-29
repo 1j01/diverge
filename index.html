@@ -19,6 +19,7 @@
 				opacity: 0;
 			}
 		</style>
+		<script src="lib/levenshtein.js"></script>
 	</head>
 	<body>
 		<input id="input" type="text" autofocus/>
@@ -72,6 +73,29 @@
 				}
 			};
 			
+			function Path(string) {
+				this.string = string;
+				this.chars = [];
+				for (var j = 0; j < string.length; j++) {
+					this.chars.push({
+						c: string[j],
+						x: 0,
+						y: 0,
+					});
+				}
+			}
+			
+			Path.prototype.matchTo = function(string) {
+				// TODO: use Hirschberg's algorithm for sequence alignment
+				// https://en.wikipedia.org/wiki/Hirschberg%27s_algorithm
+				var dist = Levenshtein.get(this.string, string);
+				return dist / (Math.max(this.string.length, string.length) + 1);
+			}
+			
+			Path.prototype.simulate = function() {
+				
+			}
+			
 			function load() {
 				var data = {paths: [
 					"That quick brown fox was jumping all around",
@@ -79,11 +103,11 @@
 					"The quick brown fox jumps over lazydawgs",
 					"The quick brown fox jumps over a lazy dog",
 					"Sphinx of black quartz, judge my vow.",
+					"The previous pigeon tempers the crystal answer.",
 					"Over the definite minimalist overlaps this grateful drama.",
 					"A shortened analogue baffles the percentage on top of the acoustic client.",
 					"An abbreviated analog confuses the rate on top of the acoustic customer.",
 					"Will the client deduce the modern paint?",
-					"The previous pigeon tempers the crystal answer.",
 					"An egg attacks?",
 					"Does the outstanding immortal reach past the absolute?",
 					"Our still-competitor lands the aircraft next to his opening taste.",
@@ -97,25 +121,18 @@
 					"What is this trying to say? There are ways of thinking that haven't been thought of",
 					"What is this trying to say? There are ways of thinking that haven't been thought of yet",
 					"What are you trying to say?",
-					"Who are you?",
-					"Who *are* YOU?",
-					"Who *are* \"YOU\"?",
+					"Who are *you*?",
 					"alphabeta-magneta",
 					"alphabetic-magnetic",
-					"alphabetically magnetic"
+					"alphabetically magnetic",
+					"start from nothing",
+					"start from nothing, end up with something",
+					"start from nothing, end up somewhere you didn't expect",
+					"start from something, end up somewhere you didn't expect"
 				]};
 				for (var i = 0; i < data.paths.length; i++) {
-					var path_str = data.paths[i];
-					var path = [];
-					path.str = path_str;
-					for (var j = 0; j < path_str.length; j++) {
-						path.push({
-							c: path_str[j],
-							x: Math.random() * 500,
-							y: Math.random() * 500,
-						});
-					}
-					paths.push(path);
+					var path_string = data.paths[i];
+					paths.push(new Path(path_string));
 				}
 			}
 			
@@ -166,7 +183,7 @@
 					cursor_blink_timer = 0;
 				}
 				
-				// TODO: center the controlled end of the selection
+				// TODO: center the controlled end of the selection (need to check input.selectionDirection)
 				view_center_x += (before_width - view_center_x) / 20;
 				
 				ctx.save();
@@ -199,19 +216,23 @@
 				// }
 				ctx.restore();
 				
-				// for (var i = 0; i < paths.length; i++) {
-				// 	var path = paths[i];
-				// 	var place_x = 50;
-				// 	var place_y = 50 + i * line_height;
-				// 	for (var j = 0; j < path.length; j++) {
-				// 		var char = path[j];
-				// 		var glyph = get_glyph(char.c);
-				// 		ctx.drawImage(glyph, char.x, char.y);
-				// 		char.x += (place_x - char.x) / 20;
-				// 		char.y += (place_y - char.y) / 20;
-				// 		place_x += glyph.width;
-				// 	}
-				// }
+				for (var i = 0; i < paths.length; i++) {
+					var path = paths[i];
+					var place_x = 50;
+					var place_y = 50 + i * line_height;
+					// console.log(path.matchTo(text))
+					if (path.matchTo(text) > 0.9) {
+						place_y = innerHeight;
+					}
+					for (var j = 0; j < path.chars.length; j++) {
+						var char = path.chars[j];
+						var glyph = get_glyph(char.c);
+						ctx.drawImage(glyph, char.x, char.y);
+						char.x += (place_x - char.x) / 20;
+						char.y += (place_y - char.y) / 20;
+						place_x += glyph.width;
+					}
+				}
 				
 				previous_text = text;
 				previous_selection_end = end_pos;
