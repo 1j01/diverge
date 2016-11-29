@@ -46,14 +46,6 @@
 			var cursor_blink_timer = 0;
 			var cursor_blink_on = true;
 			
-			var input_focused = false;
-			input.addEventListener("focus", function() {
-				input_focused = true;
-			});
-			input.addEventListener("blur", function() {
-				input_focused = false;
-			});
-			
 			var previous_text = "";
 			var previous_selection_end = 0;
 			
@@ -188,6 +180,8 @@
 				ctx.fillText(inside, before_width, 0);
 				ctx.fillStyle = "black";
 				ctx.fillText(after, before_width + inside_width, 0);
+				
+				var input_focused = document.activeElement === input && document.hasFocus();
 				if (cursor_blink_on && input_focused) {
 					if (end_pos === start_pos) {
 						ctx.fillRect(before_width, -font_size, 2, line_height);
