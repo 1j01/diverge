@@ -26,16 +26,8 @@
 		<script>
 			// display diverging paths
 			// type to choose a path (creating one if it doesn't exist)
-			// or browse paths with the mouse (/pen/other pointer, VR etc.)
-			// similar paths that don't quite match could be lined up like magnetic strings
-			// i.e. "The quick fox jumped at the opportunity"
-			// and  "The qui   fox jumps     the
-			//              c n         over     lazy dog
-			//             k   w
-			//              bro
-			// color/style text based on whether it exists yet/existed previously, and/or author
-			// maybe italics/low opacity for nonexistant text
-			// could use chromaticity for path disambiguation where paths join/diverge
+			// could use italics/low opacity for text that doesn't exist yet
+			// could use chromaticity for path disambiguation where paths join/diverge, or for authorship
 			// there could actually be a useful tool somewhere in this idea space
 			// perhaps in examining/making drafts, maybe not of books but of smaller amounts of text
 			
@@ -54,13 +46,51 @@
 			var previous_text = "";
 			var previous_selection_end = 0;
 			
+			var glyph_map = new Map;
+			var get_glyph = function(char) {
+				if (glyph_map.has(char)) {
+					return glyph_map.get(char);
+				} else {
+					var glyph_canvas = document.createElement("canvas");
+					var glyph_ctx = glyph_canvas.getContext("2d");
+					// ctx.font = font_size + "px/" + line_height + "px Arial";
+					glyph_ctx.font = font_size + "px Arial";
+					var width = glyph_ctx.measureText(char).width;
+					glyph_canvas.width = width;
+					glyph_canvas.height = line_height + 5;
+					
+					glyph_ctx.font = font_size + "px Arial";
+					glyph_ctx.textAlign = "left";
+					glyph_ctx.textBaseline = "top";
+					// ctx.fillStyle = "red"
+					glyph_ctx.fillText(char, 0, 5);
+					glyph_map.set(char, glyph_canvas);
+					return glyph_canvas;
+				}
+			};
+			
 			function load() {
 				var data = {paths: [
 					"That quick brown fox was jumping all around",
 					"The quick brown fox was jumping all around",
 					"The quick brown fox jumps over lazydawgs",
 					"The quick brown fox jumps over a lazy dog",
-					"Sphinx of black quartz, judge my vow."
+					"Sphinx of black quartz, judge my vow.",
+					"Over the definite minimalist overlaps this grateful drama.",
+					"A shortened analogue baffles the percentage on top of the acoustic client.",
+					"An abbreviated analog confuses the rate on top of the acoustic customer.",
+					"Will the client deduce the modern paint?",
+					"The previous pigeon tempers the crystal answer.",
+					"An egg attacks?",
+					"Does the outstanding immortal reach past the absolute?",
+					"Our still-competitor lands the aircraft next to his opening taste.",
+					"A capitalist forum pulses around the secret fame.",
+					"Why won't an arithmetic diameter trash the gas?",
+					"The ax hails the modest justice.",
+					"A sushi-centric motif, but with so many pairs of chopsticks, and only one piece of sushi",
+					"alphabeta-magneta",
+					"alphabetic-magnetic",
+					"alphabetically magnetic"
 				]};
 				for (var i = 0; i < data.paths.length; i++) {
 					var path_str = data.paths[i];
@@ -141,13 +171,24 @@
 					// 	ctx.fillRect(before_width + inside_width, -font_size, 2, line_height);
 					// }
 				}
-				for (var i = 0; i < paths.length; i++) {
-					var path = paths[i];
-					ctx.translate(0, line_height);
-					ctx.fillText(path.str, 0, 0);
-				}
+				// for (var i = 0; i < paths.length; i++) {
+				// 	var path = paths[i];
+				// 	ctx.translate(0, line_height);
+				// 	ctx.fillText(path.str, 0, 0);
+				// }
 				ctx.restore();
 				
+				for (var i = 0; i < paths.length; i++) {
+					var path = paths[i];
+					var place_x = 50;
+					var place_y = 50 + i * line_height;
+					for (var j = 0; j < path.length; j++) {
+						var char = path[j];
+						var glyph = get_glyph(char.c);
+						ctx.drawImage(glyph, place_x, place_y);
+						place_x += glyph.width;
+					}
+				}
 				
 				previous_text = text;
 				previous_selection_end = end_pos;

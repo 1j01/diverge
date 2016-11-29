@@ -17,3 +17,4 @@ similar paths that don't quite match could be lined up like "magnetic" strings, 
 	      k   w
 	       bro
 
+Markov text chains, paraphrasing utilities, neural networks could suggest paths that don't exist yet
