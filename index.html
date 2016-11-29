@@ -99,8 +99,8 @@
 					for (var j = 0; j < path_str.length; j++) {
 						path.push({
 							c: path_str[j],
-							x: 0,
-							y: 0,
+							x: Math.random() * 500,
+							y: Math.random() * 500,
 						});
 					}
 					paths.push(path);
@@ -185,7 +185,9 @@
 					for (var j = 0; j < path.length; j++) {
 						var char = path[j];
 						var glyph = get_glyph(char.c);
-						ctx.drawImage(glyph, place_x, place_y);
+						ctx.drawImage(glyph, char.x, char.y);
+						char.x += (place_x - char.x) / (20 + Math.sin(j) * 10);
+						char.y += (place_y - char.y) / (20 + Math.cos(j) * 10);
 						place_x += glyph.width;
 					}
 				}
