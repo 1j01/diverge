@@ -78,10 +78,13 @@
 				this.chars = [];
 				for (var j = 0; j < string.length; j++) {
 					this.chars.push({
-						c: string[j],
+						char: string[j],
 						x: 0,
 						y: 0,
-						a: 0,
+						alpha: 0,
+						x_to: 0,
+						y_to: 0,
+						alpha_to: 0,
 					});
 				}
 			}
@@ -232,20 +235,22 @@
 					// TODO: uniquify truncated strings
 					// TODO: actually branch off
 					// if (path.string.toLowerCase().indexOf(text.toLowerCase()) === 0) {
-					if (path.string.toLowerCase().indexOf(text.toLowerCase()) === 0) {
-						for (var j = 0; j < path.chars.length; j++) {
-							var char = path.chars[j];
-							var glyph = get_glyph(char.c);
-							// var alpha = j + 5 < upper_pos;
-							var alpha = j - 20 < upper_pos;
-							ctx.globalAlpha = char.a;
-							ctx.drawImage(glyph, char.x, char.y);
-							// TODO: transition outside of a condition, i.e. transition showing/hiding
-							char.x += (place_x - char.x) / 20;
-							char.y += (place_y - char.y) / 20;
-							char.a += (alpha - char.a) / 20;
-							place_x += glyph.width;
-						}
+					var matched = path.string.toLowerCase().indexOf(text.toLowerCase()) === 0;
+					
+					for (var j = 0; j < path.chars.length; j++) {
+						var char = path.chars[j];
+						var glyph = get_glyph(char.char);
+						char.x_to = place_x;
+						char.y_to = place_y;
+						char.alpha_to = matched && (j - 20 < upper_pos);
+						char.x += (char.x_to - char.x) / 20;
+						char.y += (char.y_to - char.y) / 20;
+						char.alpha += (char.alpha_to - char.alpha) / 10;
+						ctx.globalAlpha = char.alpha;
+						ctx.drawImage(glyph, char.x, char.y);
+						place_x += glyph.width;
+					}
+					if (matched) {
 						place_y += line_height;
 					}
 				}
