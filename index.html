@@ -81,16 +81,18 @@
 						c: string[j],
 						x: 0,
 						y: 0,
+						a: 0,
 					});
 				}
 			}
 			
-			Path.prototype.matchTo = function(string) {
-				// TODO: use Hirschberg's algorithm for sequence alignment
-				// https://en.wikipedia.org/wiki/Hirschberg%27s_algorithm
-				var dist = Levenshtein.get(this.string, string);
-				return dist / (Math.max(this.string.length, string.length) + 1);
-			}
+			// TODO: use Hirschberg's algorithm for sequence alignment
+			// https://en.wikipedia.org/wiki/Hirschberg%27s_algorithm
+			
+			// Path.prototype.matchTo = function(string) {
+			// 	var dist = Levenshtein.get(this.string, string);
+			// 	return dist / (Math.max(this.string.length, string.length) + 1);
+			// }
 			
 			Path.prototype.simulate = function() {
 				
@@ -214,25 +216,43 @@
 				// 	ctx.translate(0, line_height);
 				// 	ctx.fillText(path.str, 0, 0);
 				// }
-				ctx.restore();
 				
+				var place_y = 0;
 				for (var i = 0; i < paths.length; i++) {
 					var path = paths[i];
-					var place_x = 50;
-					var place_y = 50 + i * line_height;
+					var place_x = 0;
+					// var place_y = (1 + i) * line_height;
 					// console.log(path.matchTo(text))
-					if (path.matchTo(text) > 0.9) {
-						place_y = innerHeight;
-					}
-					for (var j = 0; j < path.chars.length; j++) {
-						var char = path.chars[j];
-						var glyph = get_glyph(char.c);
-						ctx.drawImage(glyph, char.x, char.y);
-						char.x += (place_x - char.x) / 20;
-						char.y += (place_y - char.y) / 20;
-						place_x += glyph.width;
+					// if (path.matchTo(text) > 0.9) {
+					// 	place_y = innerHeight;
+					// }
+					
+					// var str_dist = Levenshtein.get(path.string, text);
+					
+					// TODO: uniquify truncated strings
+					// TODO: actually branch off
+					// if (path.string.toLowerCase().indexOf(text.toLowerCase()) === 0) {
+					if (path.string.toLowerCase().indexOf(text.toLowerCase()) === 0) {
+						for (var j = 0; j < path.chars.length; j++) {
+							var char = path.chars[j];
+							var glyph = get_glyph(char.c);
+							// var alpha = j + 5 < upper_pos;
+							var alpha = j - 20 < upper_pos;
+							ctx.globalAlpha = char.a;
+							ctx.drawImage(glyph, char.x, char.y);
+							// TODO: transition outside of a condition, i.e. transition showing/hiding
+							char.x += (place_x - char.x) / 20;
+							char.y += (place_y - char.y) / 20;
+							char.a += (alpha - char.a) / 20;
+							place_x += glyph.width;
+						}
+						place_y += line_height;
 					}
 				}
+				ctx.globalAlpha = 1;
+				
+				ctx.restore();
+				
 				
 				previous_text = text;
 				previous_selection_end = end_pos;
