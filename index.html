@@ -127,6 +127,8 @@
 					"What is this trying to say? There are ways of thinking that haven't been thought of yet",
 					"What are you trying to say?",
 					"Who are *you*?",
+					"This isn't trying to solve a problem.",
+					"I want to explore.",
 					"alphabeta-magneta",
 					"alphabetic-magnetic",
 					"alphabetically magnetic",
@@ -242,7 +244,7 @@
 						var glyph = get_glyph(char.char);
 						char.x_to = place_x;
 						char.y_to = place_y;
-						char.alpha_to = matched && (j - 20 < upper_pos);
+						char.alpha_to = matched && Math.min(1, Math.max(0, (upper_pos - j + 30) / 20));
 						char.x += (char.x_to - char.x) / 20;
 						char.y += (char.y_to - char.y) / 20;
 						char.alpha += (char.alpha_to - char.alpha) / 10;

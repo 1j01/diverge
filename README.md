@@ -3,7 +3,9 @@
 
 at any and every letter
 
-**an experimental idea; nothing yet**
+organic textploration
+
+an experimental idea; **nothing yet**
 
 type to choose a path, creating one if it doesn't exist
 
@@ -17,4 +19,4 @@ similar paths that don't quite match could be lined up like "magnetic" strings, 
 	      k   w
 	       bro
 
-Markov text chains, paraphrasing utilities, neural networks could suggest paths that don't exist yet
+Markov text chains, paraphrasing utilities, and neural networks could suggest paths that don't exist yet
