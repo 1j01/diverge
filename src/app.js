@@ -116,7 +116,8 @@ function load() {
 		"start from nothing, end up somewhere you didn't expect",
 		"start from something, end up somewhere you didn't expect",
 		"It's a bit of a surprise to see you again for the first time.",
-		"Once upon a time,"
+		"Once upon a time,",
+		"]0301/134429.526:ERROR:exception_handler_server.cc(524)] ConnectNamedPipe: The pipe is being closed. (0xE8)"
 	]};
 	for (var i = 0; i < data.paths.length; i++) {
 		var path_string = data.paths[i];
