@@ -39,8 +39,6 @@ could suggest paths that don't exist yet.
 
 ### Evaluators
 
-Different communities - pages - whatever they would be -
-could have different evaluators.
 Do you value rhyme, alliteration, assonance?
 Are fifthglyphs [vil<b>e</b> & <b>e</b>vil](https://www.reddit.com/r/AVoid5/),
 or [good, top notch stuff](https://www.reddit.com/r/EmboldenTheE/)?
@@ -48,6 +46,8 @@ or [good, top notch stuff](https://www.reddit.com/r/EmboldenTheE/)?
 
 Arbitrary writing constraints and softer nudges
 can make for interesting instruments of creativity.
+
+Evaluators can be combined and weighted.
 
 ### Communities
 
@@ -76,11 +76,12 @@ or reinterpretation of something........................... -->
 
 ### Long-form writing
 
-An alternate (maybe not exclusive) direction this project could take
-would be towards longer-form writing like articles and even books.
+An alternate (maybe not exclusive) direction for this project to take
+could be towards longer-form writing like articles and even books.
 In that case it should work inline,
 and it would be more focused on *editing*,
-rather than memetic exploration,
-or [memex](https://en.wikipedia.org/wiki/Memex)ploration if you will.
+rather than exploration.
+(Memetic exploration,
+or [memex](https://en.wikipedia.org/wiki/Memex)ploration if you will.)
 
 <!-- Sorta related, a different textploration idea: https://andymakes.itch.io/intimate-codex -->
