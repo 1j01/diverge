@@ -13,8 +13,6 @@ var ctx = canvas.getContext("2d");
 var paths = [];
 var current_path = [];
 
-// TODO: save the current path to localStorage
-
 var view_center_x = 0;
 
 var font_size = 20;
@@ -78,6 +76,8 @@ Path.prototype.simulate = function() {
 }
 
 function load() {
+	input.value = localStorage["diverge current path"] || "";
+	
 	var data = {paths: [
 		"That quick brown fox was jumping all around",
 		"The quick brown fox was jumping all around",
@@ -121,10 +121,6 @@ function load() {
 	}
 }
 
-function save() {
-	
-}
-
 function resize() {
 	var width = window.innerWidth;
 	var height = window.innerHeight;
@@ -140,6 +136,9 @@ function animate(t) {
 	ctx.font = font_size + "px/" + line_height + "px Arial";
 	
 	var text = input.value;
+	// if(localStorage["diverge current path"] != text){
+	localStorage["diverge current path"] = text;
+	// }
 	
 	var start_pos = input.selectionStart;
 	var end_pos = input.selectionEnd;
