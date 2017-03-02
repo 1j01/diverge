@@ -34,7 +34,10 @@ var get_glyph = function(char) {
 		// ctx.font = font_size + "px/" + line_height + "px Arial";
 		glyph_ctx.font = font_size + "px Arial";
 		var width = glyph_ctx.measureText(char).width;
-		glyph_canvas.width = width;
+		// TODO: use width based the surrounding characters for kerning
+		// the +5 to width below is mainly for f
+		glyph_canvas.glyph_width = width;
+		glyph_canvas.width = width + 5;
 		glyph_canvas.height = line_height + 5;
 		
 		glyph_ctx.font = font_size + "px Arial";
@@ -142,7 +145,8 @@ function animate(t) {
 	
 	var start_pos = input.selectionStart;
 	var end_pos = input.selectionEnd;
-	// NOTE: these are already min and max
+	// NOTE: these are already min and max;
+	// there's selectionDirection which can be "forward", "backward", or "none"
 	
 	var lower_pos = Math.min(start_pos, end_pos);
 	var upper_pos = Math.max(start_pos, end_pos);
@@ -218,7 +222,7 @@ function animate(t) {
 		
 		for (var j = 0; j < path.chars.length; j++) {
 			var char = path.chars[j];
-			var glyph = get_glyph(char.char);
+			var glyph_canvas = get_glyph(char.char);
 			char.x_to = place_x;
 			char.y_to = place_y;
 			char.alpha_to = matched && Math.min(1, Math.max(0, (upper_pos - j + 30) / 20));
@@ -226,8 +230,8 @@ function animate(t) {
 			char.y += (char.y_to - char.y) / 20;
 			char.alpha += (char.alpha_to - char.alpha) / 10;
 			ctx.globalAlpha = char.alpha;
-			ctx.drawImage(glyph, char.x, char.y);
-			place_x += glyph.width;
+			ctx.drawImage(glyph_canvas, char.x, char.y);
+			place_x += glyph_canvas.glyph_width;
 		}
 		if (matched) {
 			place_y += line_height;
