@@ -29,13 +29,13 @@ similar paths that don't quite match could be lined up like "magnetic" strings, 
 
 ### Providers
 
-Providers can look at the path you're on and suggest alternative paths,
-especially direct continuations of the current path.
+Providers can look at the path you're on and the cursor position and suggest alternative paths.
 
-The basic provider returns paths from database of sentences entered by users.
+The basic provider returns paths from database of strings entered by users.
 
-Markov text chains, paraphrasing utilities, autocomplete services, and neural networks
-could suggest paths that don't exist yet.
+A Markov text chain or sentence autocomplete provider would return paths with text inserted at the cursor,
+whereas a paraphrasing provider (possibly using a neural network?) could return strings with infix replacements,
+making for paths that diverge and rejoin the current path.
 
 ### Evaluators
 
@@ -45,7 +45,7 @@ or [good, top notch stuff](https://www.reddit.com/r/EmboldenTheE/)?
 <!-- (Subverting demonstration of those phrases by reversing the demonstrations) -->
 
 Arbitrary writing constraints and softer nudges
-can make for interesting instruments of creativity.
+can be interesting instruments of creativity.
 
 Evaluators can be combined and weighted.
 
@@ -67,6 +67,12 @@ with seed text and rules
 set initially by a user.
 
 Either way, there'd be links, of course.
+
+<!--
+The evaluators can be used to just weigh suggested paths,
+or can they also be hard or soft rules on paths you can enter.
+Soft rules as in guidelines, or where there's a non-zero tolerance level.
+-->
 
 <!--
 Is seed text the way to go?

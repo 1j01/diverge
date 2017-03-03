@@ -13,6 +13,36 @@ var ctx = canvas.getContext("2d");
 var paths = [];
 var current_path = [];
 
+var providers = [
+	new DatabaseProvider(),
+	// new MarkovProvider(),
+	// new OriginalJokeProvider(),
+];
+
+var query_providers = function(){
+	var old_paths = paths;
+	paths = [];
+	for (var i = 0; i < providers.length; i++) {
+		var provider = providers[i];
+		var path_strings = provider.query(input.value, input.selectionStart);
+		for (var j = 0; j < path_strings.length; j++) {
+			var path_string = path_strings[j];
+			// TODO: diff paths based on visual differences
+			// i.e. for when there are multiple paths shown as one since it branches off out of the view
+			// or just for when there are branches in general
+			var path = undefined; // yes we need to reset it
+			for (var k = 0; k < old_paths.length; k++) {
+				var old_path = old_paths[k];
+				if(old_path.string == path_string){
+					path = old_path;
+				}
+			}
+			path = path || new Path(path_string);
+			paths.push(path);
+		}
+	}
+};
+
 var view_center_x = 0;
 
 var font_size = 20;
@@ -78,53 +108,6 @@ Path.prototype.simulate = function() {
 	
 }
 
-function load() {
-	input.value = localStorage["diverge current path"] || "";
-	
-	var data = {paths: [
-		"That quick brown fox was jumping all around",
-		"The quick brown fox was jumping all around",
-		"The quick brown fox jumps over lazydawgs",
-		"The quick brown fox jumps over a lazy dog",
-		"Sphinx of black quartz, judge my vow.",
-		"The previous pigeon tempers the crystal answer.",
-		"Over the definite minimalist overlaps this grateful drama.",
-		"A shortened analogue baffles the percentage on top of the acoustic client.",
-		"An abbreviated analog confuses the rate on top of the acoustic customer.",
-		"Will the client deduce the modern paint?",
-		"An egg attacks?",
-		"Does the outstanding immortal reach past the absolute?",
-		"Our still-competitor lands the aircraft next to his opening taste.",
-		"A capitalist forum pulses around the secret fame.",
-		"Why won't an arithmetic diameter trash the gas?",
-		"The ax hails the modest justice.",
-		"A sushi-centric motif, but with so many pairs of chopsticks, and only one piece of sushi",
-		"What is this trying to say? There are ways of thinking that don't exist yet",
-		"What is this trying to say? There are ways of thinking that haven't been invented",
-		"What is this trying to say? There are ways of thinking that haven't been discovered",
-		"What is this trying to say? There are ways of thinking that haven't been thought of",
-		"What is this trying to say? There are ways of thinking that haven't been thought of yet",
-		"What are you trying to say?",
-		"Who are *you*?",
-		"This isn't trying to solve a problem.",
-		"I want to explore.",
-		"alphabeta-magneta",
-		"alphabetic-magnetic",
-		"alphabetically magnetic",
-		"start from nothing",
-		"start from nothing, end up with something",
-		"start from nothing, end up somewhere you didn't expect",
-		"start from something, end up somewhere you didn't expect",
-		"It's a bit of a surprise to see you again for the first time.",
-		"Once upon a time,",
-		"]0301/134429.526:ERROR:exception_handler_server.cc(524)] ConnectNamedPipe: The pipe is being closed. (0xE8)"
-	]};
-	for (var i = 0; i < data.paths.length; i++) {
-		var path_string = data.paths[i];
-		paths.push(new Path(path_string));
-	}
-}
-
 function resize() {
 	var width = window.innerWidth;
 	var height = window.innerHeight;
@@ -140,9 +123,6 @@ function animate(t) {
 	ctx.font = font_size + "px/" + line_height + "px Arial";
 	
 	var text = input.value;
-	// if(localStorage["diverge current path"] != text){
-	localStorage["diverge current path"] = text;
-	// }
 	
 	var start_pos = input.selectionStart;
 	var end_pos = input.selectionEnd;
@@ -216,23 +196,33 @@ function animate(t) {
 		
 		// var str_dist = Levenshtein.get(path.string, text);
 		
-		// TODO: uniquify truncated strings
-		// TODO: actually branch off
+		// TODO: uniquify truncated strings,
+		// and probably weigh paths higher if there are multiple results for it
+		// and/or visually indicate that case specifically somehow
+		// TODO: actually match paths together and branch off
 		// if (path.string.toLowerCase().indexOf(text.toLowerCase()) === 0) {
 		var matched = path.string.toLowerCase().indexOf(text.toLowerCase()) === 0;
-		
+		var completely_faded_out_point = 30;
+		var fade_out_over = 20;
+		// ctx.rotate(0.04);
 		for (var j = 0; j < path.chars.length; j++) {
+			// ctx.rotate(0.001);
+			// ctx.save();
+			// ctx.rotate(-0.1);
 			var char = path.chars[j];
 			var glyph_canvas = get_glyph(char.char);
 			char.x_to = place_x;
-			char.y_to = place_y;
-			char.alpha_to = matched && Math.min(1, Math.max(0, (upper_pos - j + 30) / 20));
+			char.y_to = place_y;// + Math.sin(place_x / 50) * 5;
+			char.alpha_to = matched && Math.min(1, Math.max(0, (upper_pos - j + completely_faded_out_point) / fade_out_over));
 			char.x += (char.x_to - char.x) / 20;
 			char.y += (char.y_to - char.y) / 20;
 			char.alpha += (char.alpha_to - char.alpha) / 10;
 			ctx.globalAlpha = char.alpha;
+			// FIXME: blurry text
 			ctx.drawImage(glyph_canvas, char.x, char.y);
+			// ctx.drawImage(glyph_canvas, ~~char.x, ~~char.y);
 			place_x += glyph_canvas.glyph_width;
+			// ctx.restore();
 		}
 		if (matched) {
 			place_y += line_height;
@@ -260,9 +250,26 @@ function fullscreen() {
 	}
 }
 
-load();
-animate();
+try{
+	input.value = localStorage["diverge current path"] || "";
+}catch(e){}
+query_providers();
+
+input.addEventListener("focus", function(){
+	cursor_blink_timer = 0;
+	cursor_blink_on = true;
+});
+
+input.addEventListener("input", function(){
+	try{
+		localStorage["diverge current path"] = input.value;
+	}catch(e){}
+	query_providers();
+});
+
 canvas.addEventListener("mousedown", function(e) {
 	e.preventDefault();
 	input.focus();
 }, false);
+
+animate();
