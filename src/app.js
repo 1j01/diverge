@@ -57,10 +57,10 @@ var cursor_blink_on = true;
 var previous_text = "";
 var previous_selection_end = 0;
 
-var glyph_map = new Map;
-var get_glyph = function(char) {
-	if (glyph_map.has(char)) {
-		return glyph_map.get(char);
+var glyph_canvas_map = new Map;
+var get_glyph_canvas = function(char) {
+	if (glyph_canvas_map.has(char)) {
+		return glyph_canvas_map.get(char);
 	} else {
 		var glyph_canvas = document.createElement("canvas");
 		var glyph_ctx = glyph_canvas.getContext("2d");
@@ -78,7 +78,7 @@ var get_glyph = function(char) {
 		glyph_ctx.textBaseline = "top";
 		// ctx.fillStyle = "red"
 		glyph_ctx.fillText(char, 0, 5);
-		glyph_map.set(char, glyph_canvas);
+		glyph_canvas_map.set(char, glyph_canvas);
 		return glyph_canvas;
 	}
 };
@@ -87,13 +87,20 @@ function Path(string) {
 	this.string = string;
 	this.chars = [];
 	for (var j = 0; j < string.length; j++) {
+		var char = string[j];
 		this.chars.push({
-			char: string[j],
+			char: char,
+			glyph_canvas: get_glyph_canvas(char),
 			x: 0,
 			y: 0,
+			rot: 0,
 			alpha: 0,
-			x_to: 0,
-			y_to: 0,
+			// x_to: 0,
+			// y_to: 0,
+			// rot_to: 0,
+			x_vel: 0,
+			y_vel: 0,
+			rot_vel: 0,
 			alpha_to: 0,
 		});
 	}
@@ -114,15 +121,33 @@ Path.prototype.simulate = function(matched, place_y, selection_end_pos) {
 	var place_x = 0;
 	for (var j = 0; j < this.chars.length; j++) {
 		var char = this.chars[j];
-		var glyph_canvas = get_glyph(char.char);
+		var prev_char = this.chars[j - 1];
+		var glyph_canvas = char.glyph_canvas
+		if(prev_char){
+			// either of these will work normally as before
+			place_x = place_x + prev_char.glyph_canvas.glyph_width;
+			// place_x = prev_char.x_to + prev_char.glyph_canvas.glyph_width;
+			// this will give a squishy rollout, and works better with a faster transition
+			// place_x = prev_char.x + prev_char.glyph_canvas.glyph_width;
+		}
 		char.x_to = place_x;
 		// char.x_to = matched && place_x;
 		char.y_to = place_y;// + Math.sin(place_x / 50) * 5;
 		char.alpha_to = matched && Math.min(1, Math.max(0, (selection_end_pos - j + completely_faded_out_point) / fade_out_over));
-		char.x += (char.x_to - char.x) / 20;
-		char.y += (char.y_to - char.y) / 20;
+		// char.x += (char.x_to - char.x) / 20;
+		// // char.x += (char.x_to - char.x) / 5;
+		// char.y += (char.y_to - char.y) / 15;
 		char.alpha += (char.alpha_to - char.alpha) / 10;
-		place_x += glyph_canvas.glyph_width;
+		// place_x += glyph_canvas.glyph_width;
+		
+		const force = 1/50;
+		const damping = 0.1;
+		char.x_vel += (char.x_to - char.x) * force;
+		char.y_vel += (char.y_to - char.y) * force;
+		char.x_vel /= 1 + damping;
+		char.y_vel /= 1 + damping;
+		char.x += char.x_vel;
+		char.y += char.y_vel;
 	}
 }
 
@@ -226,7 +251,7 @@ function animate(t) {
 			// ctx.save();
 			// ctx.rotate(-0.1);
 			var char = path.chars[j];
-			var glyph_canvas = get_glyph(char.char);
+			var glyph_canvas = char.glyph_canvas;
 			ctx.globalAlpha = char.alpha;
 			// FIXME: blurry text
 			ctx.drawImage(glyph_canvas, char.x, char.y);
