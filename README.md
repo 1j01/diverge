@@ -89,6 +89,17 @@ A Markov text chain or sentence autocomplete provider would return paths with te
 whereas a paraphrasing provider (possibly using a neural network?) could return strings with infix replacements,
 making for paths that diverge and rejoin the current path.
 
+<!--
+If a provider returns a path with changes not visible in the current viewport...
+Well we definitely don't want to sneak in changes to the user's text without them knowing.
+Users should also be able to select subsets of changes from a suggestion,
+and providers should generally continue providing the other changes if one change is selected.
+If they can't, this could be handled by the UI,
+keeping a suggestion around as long as the user is heading towards it.
+Actually yeah, that would be really good.
+That way you could have a provider that returns the current text with the reverse added, for instance.
+-->
+
 ### Evaluators
 
 Do you value rhyme, alliteration, assonance?

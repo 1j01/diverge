@@ -107,8 +107,23 @@ function Path(string) {
 // 	return dist / (Math.max(this.string.length, string.length) + 1);
 // }
 
-Path.prototype.simulate = function() {
-	
+const completely_faded_out_point = 30;
+const fade_out_over = 20;
+
+Path.prototype.simulate = function(matched, place_y, selection_end_pos) {
+	var place_x = 0;
+	for (var j = 0; j < this.chars.length; j++) {
+		var char = this.chars[j];
+		var glyph_canvas = get_glyph(char.char);
+		char.x_to = place_x;
+		// char.x_to = matched && place_x;
+		char.y_to = place_y;// + Math.sin(place_x / 50) * 5;
+		char.alpha_to = matched && Math.min(1, Math.max(0, (selection_end_pos - j + completely_faded_out_point) / fade_out_over));
+		char.x += (char.x_to - char.x) / 20;
+		char.y += (char.y_to - char.y) / 20;
+		char.alpha += (char.alpha_to - char.alpha) / 10;
+		place_x += glyph_canvas.glyph_width;
+	}
 }
 
 function resize() {
@@ -190,7 +205,6 @@ function animate(t) {
 	var place_y = 0;
 	for (var i = 0; i < paths.length; i++) {
 		var path = paths[i];
-		var place_x = 0;
 		// var place_y = (1 + i) * line_height;
 		// console.log(path.matchTo(text))
 		// if (path.matchTo(text) > 0.9) {
@@ -205,8 +219,7 @@ function animate(t) {
 		// TODO: actually match paths together and show them branching off
 		// if (path.string.toLowerCase().indexOf(text.toLowerCase()) === 0) {
 		var matched = path.string.toLowerCase().indexOf(text.toLowerCase()) === 0;
-		var completely_faded_out_point = 30;
-		var fade_out_over = 20;
+		path.simulate(matched, place_y, upper_pos);
 		// ctx.rotate(0.04);
 		for (var j = 0; j < path.chars.length; j++) {
 			// ctx.rotate(0.001);
@@ -214,18 +227,10 @@ function animate(t) {
 			// ctx.rotate(-0.1);
 			var char = path.chars[j];
 			var glyph_canvas = get_glyph(char.char);
-			char.x_to = place_x;
-			// char.x_to = matched && place_x;
-			char.y_to = place_y;// + Math.sin(place_x / 50) * 5;
-			char.alpha_to = matched && Math.min(1, Math.max(0, (upper_pos - j + completely_faded_out_point) / fade_out_over));
-			char.x += (char.x_to - char.x) / 20;
-			char.y += (char.y_to - char.y) / 20;
-			char.alpha += (char.alpha_to - char.alpha) / 10;
 			ctx.globalAlpha = char.alpha;
 			// FIXME: blurry text
 			ctx.drawImage(glyph_canvas, char.x, char.y);
 			// ctx.drawImage(glyph_canvas, ~~char.x, ~~char.y);
-			place_x += glyph_canvas.glyph_width;
 			// ctx.restore();
 		}
 		if (matched) {
