@@ -19,8 +19,8 @@ Forge a path by typing
 or by browsing paths only suggested paths
 via mouse/pen/touch/whatever.
 
-Similar paths that don't quite match could be lined up "magnetically",
-as in this crude ASCII-art attempt to communicate the idea:
+Similar paths that don't quite match could be lined up "magnetically";
+here's some crude ASCII-art to try to communicate the idea:
 
 	The quick fox jumped at the opportunity
 	The qui   fox jumps     the
@@ -31,15 +31,25 @@ as in this crude ASCII-art attempt to communicate the idea:
 <!--
 There could be lines shown between
 letters that are magnetically attracted
-but are far apart due to the physics simulation
+but are far apart due to the physics simulation.
 -->
 
 <!--
-When the input is empty, should it show possible paths, or be a blank slate?
-When the input is empty, space could toggle this.
+When the input is empty,
+it could show possible paths,
+or present a more pristine blank slate.
+(The utter minimalism of a centered blinking cursor is appealing.)
+Space could act as a toggle for this.
 (You don't need to put spaces at the beginning of a path.)
 (And if you really want to for some reason, you could copy and paste a space.)
+If you're trying different letters to get the suggestions to pop up,
+you might naturally try space
+Enter could work too.
+(You don't need to enter an empty path into the database.)
+(And if you really want to for some reason, you can find a way.)
 -->
+
+<!-- FIXME: the Menu key opens with the context of the canvas rather than the input -->
 
 ### Providers
 
@@ -122,7 +132,7 @@ you'd want to treat them as such
 especially if you were to do something like /r/WritingPrompts.
 Reddit has a contest mode.
 You'd want things to be sorted at random initially.
-Votes could have a probabilty function over time of whether they count,
+Votes could have a probability function over time of whether they count,
 that settles on always counting after some period of time.
 -->
 
