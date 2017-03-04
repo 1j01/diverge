@@ -1,10 +1,13 @@
 
-// display diverging paths
-// type to choose a path (creating one if it doesn't exist)
-// could use italics/low opacity for text that doesn't exist yet
-// could use chromaticity for path disambiguation where paths join/diverge, or for authorship
-// there could actually be a useful tool somewhere in this idea space
-// perhaps in examining/making drafts, maybe not of books but of smaller amounts of text
+// TODO: actually display diverging paths
+
+// FIXME: the Menu key opens a menu with the context of the canvas instead of the input in chrome
+// chrome apparently triggers a secondary click at the focused element's location
+// so it has to be on top and have pointer-events and everything
+// TODO: we want the menu to open up in a reasonable location
+// so we'll need to position the input
+// and if we're positioning the input, maybe we can just use that
+// and get pointer-based selection and other benefits
 
 var input = document.getElementById("input");
 var canvas = document.getElementById("canvas");
@@ -199,7 +202,7 @@ function animate(t) {
 		// TODO: uniquify truncated strings,
 		// and probably weigh paths higher if there are multiple results for it
 		// and/or visually indicate that case specifically somehow
-		// TODO: actually match paths together and branch off
+		// TODO: actually match paths together and show them branching off
 		// if (path.string.toLowerCase().indexOf(text.toLowerCase()) === 0) {
 		var matched = path.string.toLowerCase().indexOf(text.toLowerCase()) === 0;
 		var completely_faded_out_point = 30;
@@ -212,6 +215,7 @@ function animate(t) {
 			var char = path.chars[j];
 			var glyph_canvas = get_glyph(char.char);
 			char.x_to = place_x;
+			// char.x_to = matched && place_x;
 			char.y_to = place_y;// + Math.sin(place_x / 50) * 5;
 			char.alpha_to = matched && Math.min(1, Math.max(0, (upper_pos - j + completely_faded_out_point) / fade_out_over));
 			char.x += (char.x_to - char.x) / 20;

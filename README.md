@@ -1,13 +1,14 @@
 
 # Diverge
 
-at any and every letter.
-
-**This is just an idea so far.**
-It's nothing yet but a filtered list
-(on a canvas with some fun transitions.)
-
 The medium is the message.
+
+Diverge at any and every letter.
+
+**This project is in the idea stage.**
+
+It's [nothing yet](http://1j01.github.io/diverge/) but a filtered list
+(on a canvas with some fun transitions.)
 
 <!-- I implore you to explore the text galore -->
 <!-- where there's text, there's always more -->
@@ -15,12 +16,30 @@ The medium is the message.
 <!-- there's always more, there's always more -->
 <!-- there's always more... there's always more... -->
 
+<!--
+type to choose a path (creating one if it doesn't exist)
+could use italics/low opacity for text that doesn't exist yet
+could use chromaticity for path disambiguation where paths join/diverge, or for authorship
+there could actually be a useful tool somewhere in this idea space
+perhaps in examining/making drafts, maybe not of books but of smaller amounts of text
+-->
+
+### Paths
+
 Forge a path by typing
-or by browsing paths only suggested paths
+or browse only suggested paths
 via mouse/pen/touch/whatever.
 
-Similar paths that don't quite match could be lined up "magnetically";
-here's some crude ASCII-art to try to communicate the idea:
+<!--
+You won't be able to forge an arbitrary path (character by character) without typing
+because it won't give you the option of every character...
+like Dasher does:
+http://www.bltt.org/software/dasher/
+-->
+
+Similar paths that don't quite match could be lined up "magnetically"
+
+Here's some crude ASCII-art to try to communicate the idea:
 
 	The quick fox jumped at the opportunity
 	The qui   fox jumps     the
@@ -48,8 +67,6 @@ Enter could work too.
 (You don't need to enter an empty path into the database.)
 (And if you really want to for some reason, you can find a way.)
 -->
-
-<!-- FIXME: the Menu key opens with the context of the canvas rather than the input -->
 
 ### Providers
 
