@@ -26,9 +26,20 @@ perhaps in examining/making drafts, maybe not of books but of smaller amounts of
 
 ### Paths
 
+<!--
 Forge a path by typing
 or browse only suggested paths
 via mouse/pen/touch/whatever.
+-->
+
+You'll be able to
+forge a path by typing
+or browse only suggested paths
+via mouse/pen/touch/whatever.
+
+Currently you can only use the keyboard,
+and to follow a suggested path,
+you have to type it out.
 
 <!--
 You won't be able to forge an arbitrary path (character by character) without typing
