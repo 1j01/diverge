@@ -1,9 +1,13 @@
 
 # Diverge
 
-at any and every letter
+at any and every letter.
 
-*organic textploration*
+**This is just an idea so far.**
+It's nothing yet but a filtered list
+(on a canvas with some fun transitions.)
+
+The medium is the message.
 
 <!-- I implore you to explore the text galore -->
 <!-- where there's text, there's always more -->
@@ -11,15 +15,12 @@ at any and every letter
 <!-- there's always more, there's always more -->
 <!-- there's always more... there's always more... -->
 
-an experimental idea;
-**nothing yet** but a filtered list
-(with some fun transitions)
+Forge a path by typing
+or by browsing paths only suggested paths
+via mouse/pen/touch/whatever.
 
-type to forge a path,
-
-or browse paths by pointing with mouse/pen/touch/whatever
-
-similar paths that don't quite match could be lined up like "magnetic" strings, i.e.
+Similar paths that don't quite match could be lined up "magnetically",
+as in this crude ASCII-art attempt to communicate the idea:
 
 	The quick fox jumped at the opportunity
 	The qui   fox jumps     the
@@ -27,11 +28,24 @@ similar paths that don't quite match could be lined up like "magnetic" strings, 
 	      k   w
 	       bro
 
+<!--
+There could be lines shown between
+letters that are magnetically attracted
+but are far apart due to the physics simulation
+-->
+
+<!--
+When the input is empty, should it show possible paths, or be a blank slate?
+When the input is empty, space could toggle this.
+(You don't need to put spaces at the beginning of a path.)
+(And if you really want to for some reason, you could copy and paste a space.)
+-->
+
 ### Providers
 
 Providers can look at the path you're on and the cursor position and suggest alternative paths.
 
-The basic provider returns paths from database of strings entered by users.
+The basic provider returns paths from a database of strings entered by users.
 
 A Markov text chain or sentence autocomplete provider would return paths with text inserted at the cursor,
 whereas a paraphrasing provider (possibly using a neural network?) could return strings with infix replacements,
@@ -78,7 +92,39 @@ Soft rules as in guidelines, or where there's a non-zero tolerance level.
 Is seed text the way to go?
 If discovery is based on the prefix of the seed text,
 you might be discouraged from making a minor change........
-or reinterpretation of something........................... -->
+or reinterpretation of something...........................
+-->
+
+<!--
+When you hit enter it could add the current path to the database (associated with your user id),
+and return to the initial state (i.e. empty or with seed text)
+while transitioning that path to a list above,
+which you could later remove or return to and branch from.
+If you follow someone else's path, you could re-enter it,
+and perhaps it would still just show up with their user identification,
+but if deleted by them, it would persist under yours?
+This might have a bad side effect if it were to encourage someone
+to archive sensitive information accidentally pasted, or drunkenly divulged.
+It could be a voting system
+showing a count of how many users re-entered a path,
+and it could even show a list of users that entered a path,
+but it might be nicer without all that stuff.
+I don't know.
+Perhaps communities could toggle options:
+whether "votes" (counts) are shown,
+whether paths would be implicitly persisted by other users' re-entering.
+Also, if paths are de-duped but weighted based on dupes,
+and the database returned dupes,
+it would naturally act as a basic voting system.
+A crude one, in some situations.
+If re-enterings are to work like votes,
+you'd want to treat them as such
+especially if you were to do something like /r/WritingPrompts.
+Reddit has a contest mode.
+You'd want things to be sorted at random initially.
+Votes could have a probabilty function over time of whether they count,
+that settles on always counting after some period of time.
+-->
 
 ### Long-form writing
 
