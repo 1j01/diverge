@@ -257,7 +257,8 @@ function animate(t) {
 			var char = path.chars[j];
 			var glyph_canvas = char.glyph_canvas;
 			ctx.globalAlpha = char.alpha;
-			ctx.rotate(0.003 * char.alpha * j);
+			// ctx.rotate(0.002 * char.alpha * (1 + 10 * (j%10)));
+			ctx.rotate(0.002 * char.alpha * (1 + 100 * (j%10)));
 			// FIXME: blurry text
 			ctx.drawImage(glyph_canvas, char.x, char.y);
 			// ctx.drawImage(glyph_canvas, ~~char.x, ~~char.y);
