@@ -138,6 +138,7 @@ Path.prototype.simulate = function(matched, place_y, selection_end_pos) {
 		// // char.x += (char.x_to - char.x) / 5;
 		// char.y += (char.y_to - char.y) / 15;
 		char.alpha += (char.alpha_to - char.alpha) / 10;
+		// char.alpha += (char.alpha_to - char.alpha) / 4;
 		// place_x += glyph_canvas.glyph_width;
 		
 		// const force = 1/50;
@@ -250,6 +251,7 @@ function animate(t) {
 		var matched = path.string.toLowerCase().indexOf(text.toLowerCase()) === 0;
 		path.simulate(matched, place_y, upper_pos);
 		// ctx.rotate(0.04);
+		ctx.rotate(0.04 * (path.chars[0] && path.chars[0].alpha));
 		for (var j = 0; j < path.chars.length; j++) {
 			// ctx.rotate(0.001);
 			// ctx.save();
@@ -257,8 +259,12 @@ function animate(t) {
 			var char = path.chars[j];
 			var glyph_canvas = char.glyph_canvas;
 			ctx.globalAlpha = char.alpha;
+			// ctx.rotate(0.002 * char.alpha);
+			// ctx.rotate(-0.002 * char.alpha * (1 + 0.1 * (i%10)));
+			// ctx.rotate(0.002 * char.alpha * (1 + 0.1 * (i%10)));
+			// ctx.rotate(0.002 * char.alpha * (1 + 10 * (i%10)));
 			// ctx.rotate(0.002 * char.alpha * (1 + 10 * (j%10)));
-			ctx.rotate(0.002 * char.alpha * (1 + 100 * (j%10)));
+			// ctx.rotate(0.002 * char.alpha * (1 + 100 * (j%10)));
 			// FIXME: blurry text
 			ctx.drawImage(glyph_canvas, char.x, char.y);
 			// ctx.drawImage(glyph_canvas, ~~char.x, ~~char.y);
