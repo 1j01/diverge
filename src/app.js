@@ -33,7 +33,7 @@ var query_providers = function(){
 			// TODO: diff paths based on visual differences
 			// i.e. for when there are multiple paths shown as one since it branches off out of the view
 			// or just for when there are branches in general
-			var path = undefined; // yes we need to reset it
+			var path = undefined; // yes we need to *reset it* to undefined
 			for (var k = 0; k < old_paths.length; k++) {
 				var old_path = old_paths[k];
 				if(old_path.string == path_string){
@@ -125,8 +125,8 @@ Path.prototype.simulate = function(matched, place_y, selection_end_pos) {
 		var glyph_canvas = char.glyph_canvas
 		if(prev_char){
 			// either of these will work normally as before
-			place_x = place_x + prev_char.glyph_canvas.glyph_width;
-			// place_x = prev_char.x_to + prev_char.glyph_canvas.glyph_width;
+			// place_x = place_x + prev_char.glyph_canvas.glyph_width;
+			place_x = prev_char.x_to + prev_char.glyph_canvas.glyph_width;
 			// this will give a squishy rollout, and works better with a faster transition
 			// place_x = prev_char.x + prev_char.glyph_canvas.glyph_width;
 		}
@@ -140,8 +140,12 @@ Path.prototype.simulate = function(matched, place_y, selection_end_pos) {
 		char.alpha += (char.alpha_to - char.alpha) / 10;
 		// place_x += glyph_canvas.glyph_width;
 		
-		const force = 1/50;
-		const damping = 0.1;
+		// const force = 1/50;
+		// const damping = 0.1;
+		// const force = 1/20;
+		// const damping = 0.2;
+		const force = 1/20;
+		const damping = 0.9999;
 		char.x_vel += (char.x_to - char.x) * force;
 		char.y_vel += (char.y_to - char.y) * force;
 		char.x_vel /= 1 + damping;
@@ -253,6 +257,7 @@ function animate(t) {
 			var char = path.chars[j];
 			var glyph_canvas = char.glyph_canvas;
 			ctx.globalAlpha = char.alpha;
+			ctx.rotate(0.003 * char.alpha * j);
 			// FIXME: blurry text
 			ctx.drawImage(glyph_canvas, char.x, char.y);
 			// ctx.drawImage(glyph_canvas, ~~char.x, ~~char.y);
