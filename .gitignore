@@ -71,3 +71,10 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# =========================
+# Editor Files
+# =========================
+
+.vscode
+.idea
