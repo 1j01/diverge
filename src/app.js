@@ -149,12 +149,13 @@ Path.prototype.set_string = function(new_string) {
 			this.glyphs.push(old_glyphs[old_string_index]);
 			old_string_index++;
 		}else{
+			var prev_glyph = this.glyphs[this.glyphs.length - 1];
 			this.glyphs.push({
 				char: char,
 				glyph_canvas: get_glyph_canvas(char),
-				x: 0,
-				y: 50,
-				rot: 30,
+				x: prev_glyph ? prev_glyph.x + prev_glyph.glyph_canvas.glyph_width : 0,
+				y: prev_glyph ? prev_glyph.y : 0,
+				rot: 0,
 				alpha: 0,
 				// x_to: 0,
 				// y_to: 0,
