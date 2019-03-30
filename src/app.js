@@ -36,7 +36,6 @@ var query_providers = function(){
 	// i.e. for when there are multiple paths shown as one since it branches off out of the view
 	// or just for when there are branches in general
 
-	// var old_paths = paths;
 	var old_paths_left = paths;
 	var path_strings_left = path_strings;
 	paths = [];
@@ -69,29 +68,11 @@ var query_providers = function(){
 		}
 	}
 
-
 	for (var j = 0; j < path_strings_left.length; j++) {
 		var path_string = path_strings_left[j];
 		var path = new Path(path_string);
 		paths.push(path);
 	}
-
-/*
-	for (var j = 0; j < path_strings.length; j++) {
-		var path_string = path_strings[j];
-		var path = undefined; // yes we need to *reset it* to undefined
-		for (var k = 0; k < old_paths.length; k++) {
-			var old_path = old_paths[k];
-			if(old_path.string == path_string){
-				path = old_path;
-				break;
-			}
-		}
-	}
-
-		path = path || new Path(path_string);
-		paths.push(path);
-	*/
 };
 
 var view_center_x = 0;
@@ -133,10 +114,10 @@ var get_glyph_canvas = function(char) {
 
 function Path(string) {
 	this.string = string;
-	this.chars = [];
+	this.glyphs = [];
 	for (var j = 0; j < string.length; j++) {
 		var char = string[j];
-		this.chars.push({
+		this.glyphs.push({
 			char: char,
 			glyph_canvas: get_glyph_canvas(char),
 			x: 0,
@@ -154,26 +135,21 @@ function Path(string) {
 	}
 }
 Path.prototype.set_string = function(new_string) {
-	var old_chars = this.chars;
+	var old_glyphs = this.glyphs;
 	var old_string = this.string;
 
 	this.string = new_string;
-	this.chars = [];
+	this.glyphs = [];
 
 	var old_string_index = 0;
-	// var new_string_index = 0;
 	for (var j = 0; j < new_string.length; j++) {
-		// confusing terminology here, "chars" as in single character strings
-		// and then later also objects
-		// TODO: call character objects charos or something, oh, glyphs, call them glyphs
 		var old_char = old_string[old_string_index];
 		var char = new_string[j];
-		// console.log(char, old_char);
 		if(char === old_char){
-			this.chars.push(old_chars[old_string_index]);
+			this.glyphs.push(old_glyphs[old_string_index]);
 			old_string_index++;
 		}else{
-			this.chars.push({
+			this.glyphs.push({
 				char: char,
 				glyph_canvas: get_glyph_canvas(char),
 				x: 0,
@@ -205,26 +181,26 @@ const fade_out_over = 20;
 
 Path.prototype.simulate = function(matched, place_y, selection_end_pos) {
 	var place_x = 0;
-	for (var j = 0; j < this.chars.length; j++) {
-		var char = this.chars[j];
-		var prev_char = this.chars[j - 1];
-		var glyph_canvas = char.glyph_canvas
-		if(prev_char){
+	for (var j = 0; j < this.glyphs.length; j++) {
+		var glyph = this.glyphs[j];
+		var prev_glyph = this.glyphs[j - 1];
+		var glyph_canvas = glyph.glyph_canvas
+		if(prev_glyph){
 			// either of these will work normally as before
-			// place_x = place_x + prev_char.glyph_canvas.glyph_width;
-			place_x = prev_char.x_to + prev_char.glyph_canvas.glyph_width;
+			// place_x = place_x + prev_glyph.glyph_canvas.glyph_width;
+			place_x = prev_glyph.x_to + prev_glyph.glyph_canvas.glyph_width;
 			// this will give a squishy rollout, and works better with a faster transition
-			// place_x = prev_char.x + prev_char.glyph_canvas.glyph_width;
+			// place_x = prev_glyph.x + prev_glyph.glyph_canvas.glyph_width;
 		}
-		char.x_to = place_x;
-		// char.x_to = matched && place_x;
-		char.y_to = place_y;// + Math.sin(place_x / 50) * 5;
-		char.alpha_to = matched && Math.min(1, Math.max(0, (selection_end_pos - j + completely_faded_out_point) / fade_out_over));
-		// char.x += (char.x_to - char.x) / 20;
-		// // char.x += (char.x_to - char.x) / 5;
-		// char.y += (char.y_to - char.y) / 15;
-		char.alpha += (char.alpha_to - char.alpha) / 10;
-		// char.alpha += (char.alpha_to - char.alpha) / 4;
+		glyph.x_to = place_x;
+		// glyph.x_to = matched && place_x;
+		glyph.y_to = place_y;// + Math.sin(place_x / 50) * 5;
+		glyph.alpha_to = matched && Math.min(1, Math.max(0, (selection_end_pos - j + completely_faded_out_point) / fade_out_over));
+		// glyph.x += (glyph.x_to - glyph.x) / 20;
+		// // glyph.x += (glyph.x_to - glyph.x) / 5;
+		// glyph.y += (glyph.y_to - glyph.y) / 15;
+		glyph.alpha += (glyph.alpha_to - glyph.alpha) / 10;
+		// glyph.alpha += (glyph.alpha_to - glyph.alpha) / 4;
 		// place_x += glyph_canvas.glyph_width;
 		
 		// const force = 1/50;
@@ -233,12 +209,12 @@ Path.prototype.simulate = function(matched, place_y, selection_end_pos) {
 		// const damping = 0.2;
 		const force = 1/20;
 		const damping = 0.9999;
-		char.x_vel += (char.x_to - char.x) * force;
-		char.y_vel += (char.y_to - char.y) * force;
-		char.x_vel /= 1 + damping;
-		char.y_vel /= 1 + damping;
-		char.x += char.x_vel;
-		char.y += char.y_vel;
+		glyph.x_vel += (glyph.x_to - glyph.x) * force;
+		glyph.y_vel += (glyph.y_to - glyph.y) * force;
+		glyph.x_vel /= 1 + damping;
+		glyph.y_vel /= 1 + damping;
+		glyph.x += glyph.x_vel;
+		glyph.y += glyph.y_vel;
 	}
 }
 
@@ -337,23 +313,23 @@ function animate(t) {
 		var matched = path.string.toLowerCase().indexOf(text.toLowerCase()) === 0;
 		path.simulate(matched, place_y, upper_pos);
 		// ctx.rotate(0.04);
-		ctx.rotate(0.04 * (path.chars[0] && path.chars[0].alpha));
-		for (var j = 0; j < path.chars.length; j++) {
+		ctx.rotate(0.04 * (path.glyphs[0] && path.glyphs[0].alpha));
+		for (var j = 0; j < path.glyphs.length; j++) {
 			// ctx.rotate(0.001);
 			// ctx.save();
 			// ctx.rotate(-0.1);
-			var char = path.chars[j];
-			var glyph_canvas = char.glyph_canvas;
-			ctx.globalAlpha = char.alpha;
-			// ctx.rotate(0.002 * char.alpha);
-			// ctx.rotate(-0.002 * char.alpha * (1 + 0.1 * (i%10)));
-			// ctx.rotate(0.002 * char.alpha * (1 + 0.1 * (i%10)));
-			// ctx.rotate(0.002 * char.alpha * (1 + 10 * (i%10)));
-			// ctx.rotate(0.002 * char.alpha * (1 + 10 * (j%10)));
-			// ctx.rotate(0.002 * char.alpha * (1 + 100 * (j%10)));
+			var glyph = path.glyphs[j];
+			var glyph_canvas = glyph.glyph_canvas;
+			ctx.globalAlpha = glyph.alpha;
+			// ctx.rotate(0.002 * glyph.alpha);
+			// ctx.rotate(-0.002 * glyph.alpha * (1 + 0.1 * (i%10)));
+			// ctx.rotate(0.002 * glyph.alpha * (1 + 0.1 * (i%10)));
+			// ctx.rotate(0.002 * glyph.alpha * (1 + 10 * (i%10)));
+			// ctx.rotate(0.002 * glyph.alpha * (1 + 10 * (j%10)));
+			// ctx.rotate(0.002 * glyph.alpha * (1 + 100 * (j%10)));
 			// FIXME: blurry text
-			ctx.drawImage(glyph_canvas, char.x, char.y);
-			// ctx.drawImage(glyph_canvas, ~~char.x, ~~char.y);
+			ctx.drawImage(glyph_canvas, glyph.x, glyph.y);
+			// ctx.drawImage(glyph_canvas, ~~glyph.x, ~~glyph.y);
 			// ctx.restore();
 		}
 		if (matched) {
