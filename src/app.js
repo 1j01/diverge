@@ -1,6 +1,4 @@
 
-// TODO: actually display diverging paths
-
 // FIXME: the Menu key opens a menu with the context of the canvas instead of the input in chrome
 // chrome apparently triggers a secondary click at the focused element's location
 // so it has to be on top and have pointer-events and everything
@@ -19,21 +17,17 @@ const providers = [
 	new DatabaseProvider(),
 	// new MarkovProvider({
 	// 	order: 3,
-	// 	input: `Let me show another prototype interface illustrating the two heuristics I've identified. This second prototype is intended to help us explore two-dimensional projectile motion. Although that may sound similar to the energy surface prototype – it's just classical mechanics in one more spatial dimension! – it's actually a very different subject, and the interface is, accordingly, very different. It's also more ambitious than the prototype for one-dimensional motion, in that I'll use it to attack a problem I didn't know how to solve before building the interface. As before, it's a rough sketch, and presumes comfort with basic mechanics and mathematics. Let's take a look*`
+	// 	corpusText: `Let me show another prototype interface illustrating the two heuristics I've identified. This second prototype is intended to help us explore two-dimensional projectile motion. Although that may sound similar to the energy surface prototype – it's just classical mechanics in one more spatial dimension! – it's actually a very different subject, and the interface is, accordingly, very different. It's also more ambitious than the prototype for one-dimensional motion, in that I'll use it to attack a problem I didn't know how to solve before building the interface. As before, it's a rough sketch, and presumes comfort with basic mechanics and mathematics. Let's take a look*`
 	// }),
 	new OriginalJokeProvider(),
 ];
 
-const query_providers = function(){
+const query_providers = ()=> {
 	let path_strings = [];
 	for (let i = 0; i < providers.length; i++) {
 		const provider = providers[i];
 		path_strings = path_strings.concat(provider.query(input.value, input.selectionStart));
 	}
-
-	// TODO: diff paths based on visual differences
-	// i.e. for when there are multiple paths shown as one since it branches off out of the view
-	// or just for when there are branches in general
 
 	let old_paths_left = paths;
 	let path_strings_left = path_strings;
@@ -43,7 +37,7 @@ const query_providers = function(){
 		let path_string = path_strings_left[j];
 		for (let k = 0; k < old_paths_left.length; k++) {
 			const old_path = old_paths_left[k];
-			if(old_path.string === path_string){
+			if (old_path.string === path_string) {
 				paths.push(old_path);
 				path_strings_left.splice(j, 1); j--;
 				old_paths_left.splice(k, 1); k--;
@@ -56,8 +50,7 @@ const query_providers = function(){
 		const path_string = path_strings_left[j];
 		for (let k = 0; k < old_paths_left.length; k++) {
 			const old_path = old_paths_left[k];
-			// if(old_path.string.toLowerCase() == path_string.toLowerCase()){
-			if(old_path.string[0] === path_string[0]){
+			if (old_path.string[0] === path_string[0]) {
 				old_path.set_string(path_string);
 				paths.push(old_path);
 				path_strings_left.splice(j, 1); j--;
@@ -86,16 +79,15 @@ let previous_text = "";
 let previous_selection_end = 0;
 
 const glyph_canvas_map = new Map;
-const get_glyph_canvas = function(char) {
+const get_glyph_canvas = (char)=> {
 	if (glyph_canvas_map.has(char)) {
 		return glyph_canvas_map.get(char);
 	} else {
 		const glyph_canvas = document.createElement("canvas");
 		const glyph_ctx = glyph_canvas.getContext("2d");
-		// ctx.font = font_size + "px/" + line_height + "px Arial";
 		glyph_ctx.font = font_size + "px Arial";
 		const width = glyph_ctx.measureText(char).width;
-		// TODO: use width based the surrounding characters for kerning
+		// TODO: use width based the surrounding characters for kerning (ideally)
 		// the +5 to width below is mainly for f
 		glyph_canvas.glyph_width = width;
 		glyph_canvas.width = width + 5;
@@ -104,7 +96,6 @@ const get_glyph_canvas = function(char) {
 		glyph_ctx.font = font_size + "px Arial";
 		glyph_ctx.textAlign = "left";
 		glyph_ctx.textBaseline = "top";
-		// ctx.fillStyle = "red"
 		glyph_ctx.fillText(char, 0, 5);
 		glyph_canvas_map.set(char, glyph_canvas);
 		return glyph_canvas;
@@ -144,10 +135,10 @@ Path.prototype.set_string = function(new_string) {
 	for (let j = 0; j < new_string.length; j++) {
 		const old_char = old_string[old_string_index];
 		const char = new_string[j];
-		if(char === old_char){
+		if (char === old_char) {
 			this.glyphs.push(old_glyphs[old_string_index]);
 			old_string_index++;
-		}else{
+		} else {
 			const prev_glyph = this.glyphs[this.glyphs.length - 1];
 			this.glyphs.push({
 				char: char,
@@ -172,7 +163,7 @@ Path.prototype.set_string = function(new_string) {
 // https://en.wikipedia.org/wiki/Hirschberg%27s_algorithm
 
 // Path.prototype.matchTo = function(string) {
-// 	let dist = Levenshtein.get(this.string, string);
+// 	const dist = Levenshtein.get(this.string, string);
 // 	return dist / (Math.max(this.string.length, string.length) + 1);
 // }
 
@@ -184,10 +175,7 @@ Path.prototype.simulate = function(matched, place_y, selection_end_pos) {
 	for (let j = 0; j < this.glyphs.length; j++) {
 		const glyph = this.glyphs[j];
 		const prev_glyph = this.glyphs[j - 1];
-		// const glyph_canvas = glyph.glyph_canvas
-		if(prev_glyph){
-			// either of these will work normally as before
-			// place_x = place_x + prev_glyph.glyph_canvas.glyph_width;
+		if (prev_glyph) {
 			place_x = prev_glyph.x_to + prev_glyph.glyph_canvas.glyph_width;
 			// this will give a squishy rollout, and works better with a faster transition
 			// place_x = prev_glyph.x + prev_glyph.glyph_canvas.glyph_width;
@@ -208,7 +196,9 @@ Path.prototype.simulate = function(matched, place_y, selection_end_pos) {
 		// const force = 1/20;
 		// const damping = 0.2;
 		const force = 1/20;
-		const damping = 0.9999;
+		const damping = 1;
+		// const force = 1/2;
+		// const damping = 2;
 		glyph.x_vel += (glyph.x_to - glyph.x) * force;
 		glyph.y_vel += (glyph.y_to - glyph.y) * force;
 		glyph.x_vel /= 1 + damping;
@@ -236,9 +226,10 @@ function animate(t) {
 	
 	const start_pos = input.selectionStart;
 	const end_pos = input.selectionEnd;
-	// NOTE: these are already min and max;
+	// NOTE: selectionStart amd selectionEnd are already min and max indexes
+	// (NOT "where you started" and "where you're selecting to")
 	// there's selectionDirection which can be "forward", "backward", or "none"
-	
+
 	const lower_pos = Math.min(start_pos, end_pos);
 	const upper_pos = Math.max(start_pos, end_pos);
 	
@@ -250,7 +241,7 @@ function animate(t) {
 	// console.log(all_text_metrics.fontBoundingBoxDescent);
 	const before_width = ctx.measureText(before).width;
 	const inside_width = ctx.measureText(inside).width;
-	const after_width = ctx.measureText(after).width;
+	// const after_width = ctx.measureText(after).width;
 	
 	if (text !== previous_text || end_pos !== previous_selection_end || end_pos !== start_pos) {
 		cursor_blink_on = true;
@@ -288,11 +279,6 @@ function animate(t) {
 		// 	ctx.fillRect(before_width + inside_width, -font_size, 2, line_height);
 		// }
 	}
-	// for (let i = 0; i < paths.length; i++) {
-	// 	let path = paths[i];
-	// 	ctx.translate(0, line_height);
-	// 	ctx.fillText(path.str, 0, 0);
-	// }
 	
 	let place_y = 0;
 	for (let i = 0; i < paths.length; i++) {
@@ -363,19 +349,19 @@ try{
 }catch(e){}
 query_providers();
 
-input.addEventListener("focus", function(){
+input.addEventListener("focus", ()=> {
 	cursor_blink_timer = 0;
 	cursor_blink_on = true;
 });
 
-input.addEventListener("input", function(){
+input.addEventListener("input", ()=> {
 	try{
 		localStorage["diverge current path"] = input.value;
 	}catch(e){}
 	query_providers();
 });
 
-canvas.addEventListener("mousedown", function(e) {
+canvas.addEventListener("mousedown", (e)=> {
 	e.preventDefault();
 	input.focus();
 }, false);
