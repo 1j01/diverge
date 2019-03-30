@@ -5,9 +5,9 @@ The medium is the message.
 
 Diverge at any and every letter.
 
-**This project is in the idea stage.**
+**This project is mostly just an idea so far.**
 
-It's nothing yet but [a filtered list (on a canvas with some fun transitions.)](https://1j01.github.io/diverge/)
+But [check out the beginnings.](https://1j01.github.io/diverge/)
 
 <!--
 type to choose a path (creating one if it doesn't exist)
