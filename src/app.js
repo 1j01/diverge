@@ -18,32 +18,80 @@ var current_path = [];
 
 var providers = [
 	new DatabaseProvider(),
-	// new MarkovProvider(),
-	// new OriginalJokeProvider(),
+	// new MarkovProvider({
+	// 	order: 3,
+	// 	input: `Let me show another prototype interface illustrating the two heuristics I've identified. This second prototype is intended to help us explore two-dimensional projectile motion. Although that may sound similar to the energy surface prototype – it's just classical mechanics in one more spatial dimension! – it's actually a very different subject, and the interface is, accordingly, very different. It's also more ambitious than the prototype for one-dimensional motion, in that I'll use it to attack a problem I didn't know how to solve before building the interface. As before, it's a rough sketch, and presumes comfort with basic mechanics and mathematics. Let's take a look*`
+	// }),
+	new OriginalJokeProvider(),
 ];
 
 var query_providers = function(){
-	var old_paths = paths;
-	paths = [];
+	var path_strings = [];
 	for (var i = 0; i < providers.length; i++) {
 		var provider = providers[i];
-		var path_strings = provider.query(input.value, input.selectionStart);
-		for (var j = 0; j < path_strings.length; j++) {
-			var path_string = path_strings[j];
-			// TODO: diff paths based on visual differences
-			// i.e. for when there are multiple paths shown as one since it branches off out of the view
-			// or just for when there are branches in general
-			var path = undefined; // yes we need to *reset it* to undefined
-			for (var k = 0; k < old_paths.length; k++) {
-				var old_path = old_paths[k];
-				if(old_path.string == path_string){
-					path = old_path;
-				}
+		path_strings = path_strings.concat(provider.query(input.value, input.selectionStart));
+	}
+
+	// TODO: diff paths based on visual differences
+	// i.e. for when there are multiple paths shown as one since it branches off out of the view
+	// or just for when there are branches in general
+
+	// var old_paths = paths;
+	var old_paths_left = paths;
+	var path_strings_left = path_strings;
+	paths = [];
+
+	for (var j = 0; j < path_strings_left.length; j++) {
+		var path_string = path_strings_left[j];
+		for (var k = 0; k < old_paths_left.length; k++) {
+			var old_path = old_paths_left[k];
+			if(old_path.string == path_string){
+				paths.push(old_path);
+				path_strings_left.splice(j, 1); j--;
+				old_paths_left.splice(k, 1); k--;
+				break;
 			}
-			path = path || new Path(path_string);
-			paths.push(path);
 		}
 	}
+
+	for (var j = 0; j < path_strings_left.length; j++) {
+		var path_string = path_strings_left[j];
+		for (var k = 0; k < old_paths_left.length; k++) {
+			var old_path = old_paths_left[k];
+			// if(old_path.string.toLowerCase() == path_string.toLowerCase()){
+			if(old_path.string[0] == path_string[0]){
+				old_path.set_string(path_string);
+				paths.push(old_path);
+				path_strings_left.splice(j, 1); j--;
+				old_paths_left.splice(k, 1); k--;
+				break;
+			}
+		}
+	}
+
+
+	for (var j = 0; j < path_strings_left.length; j++) {
+		var path_string = path_strings_left[j];
+		var path = new Path(path_string);
+		paths.push(path);
+	}
+
+/*
+	for (var j = 0; j < path_strings.length; j++) {
+		var path_string = path_strings[j];
+		var path = undefined; // yes we need to *reset it* to undefined
+		for (var k = 0; k < old_paths.length; k++) {
+			var old_path = old_paths[k];
+			if(old_path.string == path_string){
+				path = old_path;
+				break;
+			}
+		}
+	}
+
+		path = path || new Path(path_string);
+		paths.push(path);
+	*/
 };
 
 var view_center_x = 0;
@@ -103,6 +151,44 @@ function Path(string) {
 			rot_vel: 0,
 			alpha_to: 0,
 		});
+	}
+}
+Path.prototype.set_string = function(new_string) {
+	var old_chars = this.chars;
+	var old_string = this.string;
+
+	this.string = new_string;
+	this.chars = [];
+
+	var old_string_index = 0;
+	// var new_string_index = 0;
+	for (var j = 0; j < new_string.length; j++) {
+		// confusing terminology here, "chars" as in single character strings
+		// and then later also objects
+		// TODO: call character objects charos or something, oh, glyphs, call them glyphs
+		var old_char = old_string[old_string_index];
+		var char = new_string[j];
+		// console.log(char, old_char);
+		if(char === old_char){
+			this.chars.push(old_chars[old_string_index]);
+			old_string_index++;
+		}else{
+			this.chars.push({
+				char: char,
+				glyph_canvas: get_glyph_canvas(char),
+				x: 0,
+				y: 50,
+				rot: 30,
+				alpha: 0,
+				// x_to: 0,
+				// y_to: 0,
+				// rot_to: 0,
+				x_vel: 0,
+				y_vel: 0,
+				rot_vel: 0,
+				alpha_to: 0,
+			});
+		}
 	}
 }
 
