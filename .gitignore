@@ -1,6 +1,23 @@
+
+# Production
+/build
+
+# Local environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# From dependencies
+/.pnp
+.pnp.js
+
 # Logs
 logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Runtime data
 pids

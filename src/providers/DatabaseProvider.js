@@ -1,5 +1,6 @@
 
 var psuedo_db = [
+	"Hello world!",
 	"That quick brown fox was jumping all around",
 	"The quick brown fox was jumping all around",
 	"The quick brown fox jumps over lazydawgs",
@@ -42,6 +43,11 @@ var psuedo_db = [
 	"start from nothing, end up with something",
 	"start from nothing, end up somewhere you didn't expect",
 	"start from something, end up somewhere you didn't expect",
+	"Textploration incarnate.",
+	"A new medium of text.",
+	"A new medium for text.",
+	"A medium for massaging text.",
+	"A new medium for textploration.",
 	"It's a bit of a surprise to see you again for the first time.",
 	"Once upon a time,",
 	"Once upon a time, there was a",
@@ -65,3 +71,5 @@ function DatabaseProvider(){
 DatabaseProvider.prototype.query = function(){
 	return psuedo_db;
 };
+
+export default DatabaseProvider;

@@ -1,3 +1,7 @@
+import DatabaseProvider from "./providers/DatabaseProvider";
+// import MarkovProvider from "./providers/MarkovProvider";
+import OriginalJokeProvider from "./providers/OriginalJokeProvider";
+import "./app.css";
 
 // FIXME: the Menu key opens a menu with the context of the canvas instead of the input in chrome
 // chrome apparently triggers a secondary click at the focused element's location
@@ -7,6 +11,7 @@
 // and if we're positioning the input, maybe we can just use that
 // and get pointer-based selection and other benefits
 
+// const container = document.getElementById("root");
 const input = document.getElementById("input");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -78,7 +83,7 @@ let cursor_blink_on = true;
 let previous_text = "";
 let previous_selection_end = 0;
 
-const glyph_canvas_map = new Map;
+const glyph_canvas_map = new Map();
 const get_glyph_canvas = (char)=> {
 	if (glyph_canvas_map.has(char)) {
 		return glyph_canvas_map.get(char);
@@ -92,7 +97,7 @@ const get_glyph_canvas = (char)=> {
 		glyph_canvas.glyph_width = width;
 		glyph_canvas.width = width + 5;
 		glyph_canvas.height = line_height + 5;
-		
+
 		glyph_ctx.font = font_size + "px Arial";
 		glyph_ctx.textAlign = "left";
 		glyph_ctx.textBaseline = "top";
@@ -190,7 +195,7 @@ Path.prototype.simulate = function(matched, place_y, selection_end_pos) {
 		glyph.alpha += (glyph.alpha_to - glyph.alpha) / 10;
 		// glyph.alpha += (glyph.alpha_to - glyph.alpha) / 4;
 		// place_x += glyph_canvas.glyph_width;
-		
+
 		// const force = 1/50;
 		// const damping = 0.1;
 		// const force = 1/20;
@@ -218,12 +223,12 @@ function resize() {
 function animate(t) {
 	requestAnimationFrame(animate);
 	resize();
-	
+
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.font = font_size + "px/" + line_height + "px Arial";
 
 	const text = input.value;
-	
+
 	const start_pos = input.selectionStart;
 	const end_pos = input.selectionEnd;
 	// NOTE: selectionStart amd selectionEnd are already min and max indexes
@@ -232,17 +237,17 @@ function animate(t) {
 
 	const lower_pos = Math.min(start_pos, end_pos);
 	const upper_pos = Math.max(start_pos, end_pos);
-	
+
 	const before = text.slice(0, lower_pos);
 	const inside = text.slice(lower_pos, end_pos);
 	const after = text.slice(end_pos);
-	
+
 	// const all_text_metrics = ctx.measureText(text);
 	// console.log(all_text_metrics.fontBoundingBoxDescent);
 	const before_width = ctx.measureText(before).width;
 	const inside_width = ctx.measureText(inside).width;
 	// const after_width = ctx.measureText(after).width;
-	
+
 	if (text !== previous_text || end_pos !== previous_selection_end || end_pos !== start_pos) {
 		cursor_blink_on = true;
 		cursor_blink_timer = 0; // could be negative
@@ -252,10 +257,10 @@ function animate(t) {
 		cursor_blink_on = !cursor_blink_on;
 		cursor_blink_timer = 0;
 	}
-	
+
 	// TODO: center the controlled end of the selection (need to check input.selectionDirection)
 	view_center_x += (before_width - view_center_x) / 20;
-	
+
 	ctx.save();
 	ctx.translate(canvas.width/2, canvas.height/2);
 	ctx.translate(-view_center_x, 0);
@@ -279,7 +284,7 @@ function animate(t) {
 		// 	ctx.fillRect(before_width + inside_width, -font_size, 2, line_height);
 		// }
 	}
-	
+
 	let place_y = 0;
 	for (let i = 0; i < paths.length; i++) {
 		const path = paths[i];
@@ -288,9 +293,9 @@ function animate(t) {
 		// if (path.matchTo(text) > 0.9) {
 		// 	place_y = innerHeight;
 		// }
-		
+
 		// let str_dist = Levenshtein.get(path.string, text);
-		
+
 		// TODO: uniquify truncated strings,
 		// and probably weigh paths higher if there are multiple results for it
 		// and/or visually indicate that case specifically somehow
@@ -323,16 +328,16 @@ function animate(t) {
 		}
 	}
 	ctx.globalAlpha = 1;
-	
+
 	ctx.restore();
-	
-	
+
+
 	previous_text = text;
 	previous_selection_end = end_pos;
-	
+
 }
 
-function fullscreen() {
+/*function fullscreen() {
 	if (container.requestFullscreen) {
 		container.requestFullscreen();
 	} else if (container.msRequestFullscreen) {
@@ -342,7 +347,7 @@ function fullscreen() {
 	} else if (container.webkitRequestFullscreen) {
 		container.webkitRequestFullscreen();
 	}
-}
+}*/
 
 try{
 	input.value = localStorage["diverge current path"] || "";

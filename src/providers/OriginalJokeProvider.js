@@ -8,3 +8,5 @@ function OriginalJokeProvider(){
 OriginalJokeProvider.prototype.query = function(current_text, index){
 	return [current_text + " " + this.suffix];
 };
+
+export default  OriginalJokeProvider;
