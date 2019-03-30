@@ -34,13 +34,6 @@ Currently you can only use the keyboard,
 and to follow a suggested path,
 you have to type it out.
 
-<!--
-You won't be able to forge an *arbitrary* path (character by character) without typing
-because it won't give you the option of every character...
-like Dasher does:
-http://www.bltt.org/software/dasher/
--->
-
 Similar paths that don't quite match could be lined up "magnetically"
 
 Here's some crude ASCII-art to try to communicate the idea:
@@ -174,8 +167,12 @@ An alternate (maybe not exclusive) direction for this project to take
 could be towards longer-form writing like articles and even books.
 In that case it should work inline,
 and it would be more focused on *editing*,
-rather than exploration.
-(Memetic exploration,
-or [memex](https://en.wikipedia.org/wiki/Memex)ploration if you will.)
+rather than pure exploration.
+I think this is less interesting, for now.
 
-<!-- Sorta related, a different textploration idea: https://andymakes.itch.io/intimate-codex -->
+### See also
+
+- a different textploration idea: [Intimate Codex](https://andymakes.itch.io/intimate-codex)
+- the [LibraryOfBabel](https://www.reddit.com/r/LibraryofBabel/) subreddit
+- [Dasher](http://www.bltt.org/software/dasher/), a text input method where you zoom and drill down into letters, weighted by how likely it thinks you are to want to use them from context
+- [rnn-writer](https://github.com/robinsloan/rnn-writer), a sentence autocompleter, which could be integrated via their [torch-rnn-server](https://github.com/robinsloan/torch-rnn-server), or even their hosted [text.bargains](https://text.bargains)
