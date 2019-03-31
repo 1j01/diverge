@@ -4,6 +4,8 @@
   "private": true,
   "description": "A new medium for textploration.",
   "dependencies": {
+    "cmu-pronouncing-dictionary": "1.0.3",
+    "phoneme-types": "1.2.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "2.1.8"
