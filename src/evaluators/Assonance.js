@@ -45,28 +45,34 @@ export default class Assonance {
 	evaluate(text) {
 		const phonemes = toPhonemes(text);
 		const vowelHistory = [];
+		const pointsHistory = [];
 		// const vowelHistogram = {};
 		let points = 0;
 		let totalVowels = 0;
 		phonemes.forEach((phoneme)=> {
 			if (isVowelish(stripStressor(phoneme))) {
 				if (vowelHistory.length > this.windowSize) {
-					vowelHistory.unshift();
+					vowelHistory.shift();
+					pointsHistory.shift();
 				}
-				const matchedRecentVowel = vowelHistory.some((recentVowel)=> {
+				const matchIndex = vowelHistory.findIndex((recentVowel)=> {
 					return testVowelAssonance(recentVowel, phoneme);
 				});
+				const matchedRecentVowel = matchIndex > -1;
 				totalVowels += 1;
 				if (matchedRecentVowel) {
 					points += 1;
+					if (!pointsHistory[matchIndex]) {
+						points += 1;
+						pointsHistory[matchIndex] = true;
+					}
 				}
 				vowelHistory.push(phoneme);
+				pointsHistory.push(matchedRecentVowel);
 				// vowelHistogram[phoneme] = (vowelHistogram[phoneme] || 0) + 1;
 			}
 		});
 		// console.log(`score: ${points} / (${totalVowels} || 1)`, vowelHistogram);
-		// return points / (totalVowels || 1);
-		const possiblePoints = totalVowels - 1;
-		return points / Math.max(possiblePoints, 1);
+		return points / Math.max(totalVowels, 1);
 	}
 }
