@@ -28,7 +28,8 @@ via mouse/pen/touch/whatever.
 You'll be able to
 forge a path by typing,
 or follow suggested paths
-via mouse/pen/touch/whatever.
+via mouse/pen/touch/whatever
+(or Tab on the keyboard).
 
 Currently you can only use the keyboard,
 and to follow a suggested path,
@@ -168,18 +169,23 @@ could be towards longer-form writing like articles and even books.
 In that case it should work inline,
 and it would be more focused on *editing*,
 rather than pure exploration.
-I think this is less interesting, for now.
+I think this is less interesting for now.
 
 ### See also
 
 - a different textploration idea: [Intimate Codex](https://andymakes.itch.io/intimate-codex)
 - the [LibraryOfBabel](https://www.reddit.com/r/LibraryofBabel/) subreddit
+- the [LibraryOfBabelCollaboration](https://docs.google.com/document/d/1OFGbgKawAdHdWvf8NQgXijwcW77iE1B5IIi9dwveiPs/edit?usp=sharing) - a google doc you're free to edit
+- [Your World of Text](https://www.yourworldoftext.com/) and [Our World of Text](https://ourworldoftext.com/)
 - [Dasher](http://www.bltt.org/software/dasher/), a text input method where you zoom and drill down into letters, weighted by how likely it thinks you are to want to use them from context
-- [rnn-writer](https://github.com/robinsloan/rnn-writer), a sentence autocompleter, which could be integrated via their [torch-rnn-server](https://github.com/robinsloan/torch-rnn-server), or even their hosted [text.bargains](https://text.bargains)
+- [rnn-writer](https://github.com/robinsloan/rnn-writer), a sentence autocompleter, which could be integrated into this project, via their [torch-rnn-server](https://github.com/robinsloan/torch-rnn-server), or even their hosted [text.bargains](https://text.bargains)
 
 ## Development
 
 I'm using [Create React App](https://github.com/facebook/create-react-app) for the webpack + dev server setup, even tho i'm not using React.
+
+- [Clone the repo](https://help.github.com/en/articles/cloning-a-repository)
+- Install dependencies with `yarn install`
 
 In the project directory, you can run:
 
@@ -201,3 +207,11 @@ See the docs about [running tests](https://facebook.github.io/create-react-app/d
 Builds the app for production to the `build` folder.
 
 The build is minified and the filenames include the hashes.
+
+### `npm run deploy`
+
+Builds, and then pushes to `gh-pages`
+
+## License
+
+MIT licensed. See [LICENSE.txt](LICENSE.txt) for details.
