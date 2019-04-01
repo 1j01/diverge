@@ -68,7 +68,7 @@ Enter could work too.
 
 ### Providers
 
-Providers can look at the path you're on and the cursor position and suggest alternative paths.
+Providers can look at the path you're on and the cursor position and suggest new paths.
 
 The basic provider returns paths from a database of strings entered by users.
 
@@ -100,6 +100,12 @@ can be interesting instruments of creativity.
 Evaluators can be combined and weighted.
 
 ### Communities
+
+i think it could be a really  cool unique social experience
+
+branching off of peoples' writing and having them branch off of yours
+
+a natural medium for nonlinear stories
 
 I don't know what would work best
 for the granularity and structure,

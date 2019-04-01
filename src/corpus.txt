@@ -1,0 +1,548 @@
+If I needed someone to love
+You're the one that I'd be thinking of
+If I needed someone
+
+If I had some more time to spend
+Then I guess I'd be with you my friend
+If I needed someone
+Had you come some other day
+Then it might not have been like this
+But you see now I'm too much in love
+
+Carve your number on my wall
+And maybe you will get a call from me
+If I needed someone
+Ah, ah, ah, ah
+
+If I had some more time to spend
+Then I guess I'd be with you my friend
+If I needed someone
+Had you come some other day
+Then it might not have been like this
+But you see now I'm too much in love
+
+Carve your number on my wall
+And maybe you will get a call from me
+If I needed someone
+
+KBpedia is now open source!
+KBpedia Knowledge Structure
+
+
+HOME
+KNOWLEDGE GRAPH
+DEMO
+BACKGROUND
+USE CASES
+RESOURCES
+
+  Use Cases Word Embedding Corpuses
+
+USE CASE
+Title:	Document-specific word2Vec Training Corpuses
+Short Description:	The rich structure in KBpedia is used to create training corpuses for word2vec rapidly and cheaply on the fly
+Problem:	We need to cluster or classify documents by topic, or to characterize them by sentiment or for recommendations
+Approach:	word2vec is an artificial intelligence 'word embedding' model that can establish similarities between terms. These similarities can be used to address the stated problems. The rich structure and entity types within KBpedia's knowledge structure can be used, with one or two simple queries, to create relevant domain "slices" of tens of thousands of documents and entities upon which to train word2vec models. This approach eliminates the majority of effort normally associated with word2vec for domain purposes, enabling available effort to be spent on refining the parameters of the model for superior results
+Key Findings:
+Domain-specifc training corpuses work better with less ambiguity than general corpuses for these problems
+KBpedia speeds and eases the creation of domain-specific training corpuses for word2vec (and other corpus-based models)
+Other public and private text sources may be readily added to the KBpedia baseline in order to obtain still further domain-relevant models
+Such domain-specific training corpuses can be used to establish similarity between local text documents or HTML web pages
+This method can also be combined with a topics analyzer to first tag text documents using KBpedia reference concepts, and then inform or augment these domain-specific training corpuses
+These capabilities enable rapid testing and refinement of different combinations of "seed" concepts to obtain better desired results.
+
+
+
+
+According to DeepLearning4J's Word2Vec tutorial, "Given enough data, usage and contexts, Word2vec can make highly accurate guesses about a word’s meaning based on past appearances. Those guesses can be used to establish a word’s association with other words (e.g., 'man' is to 'boy' what 'woman' is to 'girl'), or cluster documents and classify them by topic. Those clusters can form the basis of search, sentiment analysis and recommendations in such diverse fields as scientific research, legal discovery, e-commerce and customer relationship management."
+
+Word2vec is a two layer artificial neural network used to process text to learn relationships between words within a text corpus. Word2vec takes as its input a large corpus of text and produces a high-dimensional space (typically of several hundred dimensions), with each unique word in the corpus being assigned a corresponding vector in the space. This "word embedding" approach is able to capture multiple different degrees of similarity between words. To create the model of relationships between the words, a particular grouping of text or documents is fed to the word2vec process, which is called the training corpus.
+
+This use case shows how the KBpedia knowledge structure can be used to automatically create highly accurate domain-specific training corpuses that can be used by word2vec to generate word relationship models, often with superior performance and results to generalized word2vec models. The basic approach in this use case is not only applicable to word2vec, but to any method that uses corpuses of text for training. For example, in another use case, we will show how this can be done with another algorithm called ESA (Explicit Semantic Analysis).
+
+It is said about word2vec that "given enough data, usage and contexts, word2vec can make highly accurate guesses about a word’s meaning based on past appearances." What this use case shows is how the context of the training corpus may greatly impact the results. This use case also shows how KBpedia may be leveraged to quickly create very responsive domain-specific corpuses for training the model.
+
+
+Training Corpus
+A training corpus is really just a set of text used to train unsupervised machine learning algorithms. Any kind of text can be used by word2vec. The only thing it does is to learn the relationships between the words that exist in the text. However, not all training corpuses are equal. Training corpuses are often dirty, biaised and ambiguous. Depending on the task at hand, it may be exactly what is required, but more often than not, such errors need to be fixed. Cognonto has the advantage of starting with clean text.
+
+When we want to create a new training corpus, the first step is to find a source of text that could work to create that corpus. The second step is to select the text we want to add to it. The third step is to pre-process that corpus of text to perform different operations on the text, such as: removing HTML elements; removing punctuation; normalizing text; detecting named entities; etc. The final step is to train word2vec to generate the model.
+
+Word2vec is somewhat dumb. It only learns what exists in the training corpus. It does not do anything other than "read" the text and then analyze the relationships between the words (which are really just groups of characters separated by spaces). The word2vec process is highly subject to the Garbage In, Garbage Out principle, which means that if the training set is dirty, biaised and ambiguous, then the learned relationship will end-up being of little or no value.
+
+
+Domain-specific Training Corpus
+A domain-specific training corpus is a specialized training corpus where its text is related to a specific domain. Examples of domains are music, mathematics, cars, healthcare, etc. In contrast, a general training corpus is a corpus of text that may contain text that discusses totally different domains. By creating a corpus of text that covers a specific domain of interest, we limit the usage of words (that is, their co-occurrences) to texts that are meaningful to that domain.
+
+As we will see in this use case, a domain-specific training corpus can be quite useful, and much more powerful, than general ones, if the task at hand is in relation to a specific domain of expertise. In the past, the major problem with domain-specific training corpuses was that they were costly to create. These costs arose because it is necessary to find a source of data to use, and then to select the specific documents to include in the training corpus. This can work if we want a corpus with 100 or 200 documents, but what if you want a training corpus of 100,000 or 200,000 documents? Then it becomes a problem.
+
+This is the kind of problem that KBpedia helps to resolve. KBpedia is a set of ~39,000 reference concepts that have ~138,000 links to schema of external data sources such as Wikipedia, Wikidata and USPTO. It is that structure and these links to external data sources that we use to create domain-specific training corpuses on the fly. We leverage the reference concept structure to select all of the concepts that should be part of the domain that is being defined. Then we use inference capabilities to infer all of the thousands of concepts that define the full scope of the domain. Then we analyze the hundreds or thousands of concepts we selected that way to get all of the links to external data sources. Finally we use these references to create the training corpus. All of this is done automatically once the initial few concepts that define the subject domain get selected. The workflow looks like:
+
+cognonto-workflow.png
+
+The Process
+To show how this process works, let's create a domain-specific training corpus using KBpedia about, say, musicians. We will compare this domain-specific corpus to the general word2vec model created by Google based on news sources that has about 100 billion words. The Google model contains 300-dimensional vectors for 3 million words and phrases. We will use the Google News model as the general model to compare the results/performance to our domain-specific musicians model.
+
+
+Determining the Domain
+The first step is to define the scope of the domain we want to create. For this use case example, we want a domain that is somewhat constrained to create a training corpus that is not too large for demo purposes. The domain we have chosen is musicians. This domain is related to people and bands that play music. It is also related to musical genres, instruments, music industry, etc.
+
+To create this domain, we beginwith a single KBpedia reference concept: Musician. If we want to broaden the scope of the domain, we could have included other concepts such as: Music, Musical Group, Musical Instrument, etc.
+
+
+Aggregating the Domain-specific Training Corpus
+Once we have determined the scope of the domain, the next step is to query the KBpedia knowledge base to aggregate all of the text that will belong to that training corpus. The end result of this operation is to create a training corpus with text that is only related to the scope of the domain we defined.
+
+(defn create-domain-specific-training-set
+  [target-kbpedia-class corpus-file]
+  (let [step 1000
+        entities-dataset "http://kbpedia.org/knowledge-base/"
+        kbpedia-dataset "http://kbpedia.org/kko/"
+        nb-entities (get-nb-entities-for-class-ws target-kbpedia-class entities-dataset kbpedia-dataset)]
+    (loop [nb 0
+           nb-processed 1]
+      (when (< nb nb-entities)
+        (doseq [entity (get-entities-slice target-kbpedia-class entities-dataset kbpedia-dataset :limit step :offset @nb-processed)]
+          (spit corpus-file (str (get-entity-content entity) "\n") :append true)
+          (println (str nb-processed "/" nb-entities)))
+        (recur (+ nb step)
+               (inc nb-processed))))))
+
+(create-domain-specific-training-set "http://kbpedia.org/kko/rc/Musician" "resources/musicians-corpus.txt")
+What this code does is to query the KBpedia knowledge base to get all the named entities that are linked to it, for the scope of the domain we defined. Then the text related to each entity is appended to a text file where each line is the text of a single entity.
+
+Given the scope of the current use case, the musicians training corpus is composed of 47,263 documents. With a simple function, we are able to aggregate 47,263 text documents highly related to a conceptual domain we defined on the fly. All of the hard work has been delegated to the knowledge base and its conceptual structure. (In fact, this simple function leverages 8 years of hard work).
+
+
+Normalizing Text
+The next step is a common one related to any NLP pipeline. Before learning from the training corpus, we should clean and normalize the text of its raw form.
+
+(defn normalize-proper-name
+  [name]
+  (-> name
+      (string/replace #" " "_")
+      (string/lower-case)))
+
+(defn pre-process-line
+  [line]
+  (-> (let [line (-> line
+                     ;; 1. remove all underscores
+                     (string/replace "_" " "))]
+        ;; 2. detect named entities and change them with their underscore form, like: Fred Giasson -> fred_giasson
+        (loop [entities (into [] (re-seq #"[\p{Lu}]([\p{Ll}]+|\.)(?:\s+[\p{Lu}]([\p{Ll}]+|\.))*(?:\s+[\p{Ll}][\p{Ll}\-]{1,3}){0,1}\s+[\p{Lu}]([\p{Ll}]+|\.)" line))
+               line line]
+          (if (empty? entities)
+            line
+            (let [entity (first (first entities))]
+              (recur (rest entities)
+                     (string/replace line entity (normalize-proper-name entity)))))))
+      (string/replace (re-pattern stop-list) " ")
+      ;; 4. remove everything between brackets like: [1] [edit] [show]
+      (string/replace #"\[.*\]" " ")
+      ;; 5. punctuation characters except the dot and the single quote, replace by nothing: (),[]-={}/\~!?%$@&*+:;<>
+      (string/replace #"[\^\(\)\,\[\]\=\{\}\/\\\~\!\?\%\$\@\&\*\+:\;\<\>\"\p{Pd}]" " ")
+      ;; 6. remove all numbers
+      (string/replace #"[0-9]" " ")
+      ;; 7. remove all words with 2 characters or less
+      (string/replace #"\b[\p{L}]{0,2}\b" " ")
+      ;; 10. normalize spaces
+      (string/replace #"\s{2,}" " ")
+      ;; 11. normalize dots with spaces
+      (string/replace #"\s\." ".")
+      ;; 12. normalize dots
+      (string/replace #"\.{1,}" ".")
+      ;; 13. normalize underscores
+      (string/replace #"\_{1,}" "_")
+      ;; 14. remove standalone single quotes
+      (string/replace " ' " " ")
+      ;; 15. re-normalize spaces
+      (string/replace #"\s{2,}" " ")
+      ;; 16. put everything lowercase
+      (string/lower-case)
+
+      (str "\n")))
+
+(defn pre-process-corpus
+  [in-file out-file]
+  (spit out-file "" :append true)
+  (with-open [file (clojure.java.io/reader in-file)]
+    (doseq [line (line-seq file)]
+      (spit out-file (pre-process-line line) :append true))))
+
+(pre-process-corpus "resources/musicians-corpus.txt" "resources/musicians-corpus.clean.txt")
+We remove all of the characters that may cause issues to the tokenizer used by the word2vec implementation. We also remove unnecessary words and other words that appear too often or that add nothing to the model we want to generate (like the listing of days and months). We also drop all numbers. By the way, such cleaning steps are common to most such models, and can be used repeatedly across projects.
+
+
+Training word2vec
+The last step is to train word2vec on our clean domain-specific training corpus to generate the model we will use. For this use case, we will use the DL4J (Deep Learning for Java) library that is a Java implementation of the word2vec methods. Training word2vec is as simple as using the DL4J API like this:
+
+(defn train
+  [training-set-file model-file]
+  (let [sentence-iterator (new LineSentenceIterator (clojure.java.io/file training-set-file))
+        tokenizer (new DefaultTokenizerFactory)
+        vec (.. (new word2vec$Builder)
+                (minWordFrequency 1)
+                (windowSize 5)
+                (layerSize 100)
+                (iterate sentence-iterator)
+                (tokenizerFactory tokenizer)
+                build)]
+    (.fit vec)
+    (SerializationUtils/saveObject vec (io/file model-file))
+    vec))
+
+(def musicians-model (train "resources/musicians-corpus.clean.txt" "resources/musicians-corpus.model"))
+What is important to notice here is the number of parameters that can be defined to train word2vec on a corpus. In fact, word2vec can be sensitive to parametrization. In a standard use case, since creation of the domain-specific training corpus is so easy, most of the total time getting great results is spent tuning these parameters (subjects of other use cases).
+
+
+Importing the General Model
+To provide our general comparison, we next need to import the Google News model. DL4J can import this model without having to generate it ourselves (in fact, only the model is distributed by Google, not the training corpus):
+
+(defn import-google-news-model
+  []
+  (org.deeplearning4j.models.embeddings.loader.WordVectorSerializer/loadGoogleModel (clojure.java.io/file "GoogleNews-vectors-negative300.bin.gz") true))
+
+(def google-news-model (import-google-news-model))
+
+Playing With Models
+Now that we have a domain-specific model related to musicians and a general model related to news processed by Google, let's start playing with both to see how they perform on different tasks. In the following examples, we will always compare the domain-specific training corpus with the general one.
+
+
+Ambiguous Words
+A characteristic of words is that their surface form can be ambiguous; they can have multiple meanings. An ambiguous word can co-occur with multiple other words that may not have any shared meaning. But all of this depends on the context. If we are in a general context, then this situation will happen more often than we think and will impact the similarity score of these ambiguous terms. However, as we will see, this phenomenum is greatly diminished when we use domain-specific models.
+
+
+Similarity Between Piano, Organ and Violin
+What we want to check is the relationship between 3 different music instruments: piano, organ and violin. We want to check the relationship between each of them.
+
+(.similarity musicians-model "piano" "violin")
+0.8810334205627441
+(.similarity musicians-model "piano" "organ")
+0.8591226935386658
+As we can see, both tuples have a high likelihood of co-occurrence. This suggests that these terms of each tuple are probably highly related. In this case, it is probably because violins are often played along with a piano. And, it is probable that an organ looks like a piano (at least it has a keyboard).
+
+Now let's take a look at what the general model has to say about that:
+
+(.similarity google-news-model "piano" "violin")
+0.8228187561035156
+(.similarity google-news-model "piano" "organ")
+0.4616874158382416
+The surprising fact here is the apparent dissimilarity between piano and organ compared with the results we got with the musicians domain-specific model. If we think a bit about this use case, we will probably conclude that these results makes sense. In fact, organ is an ambiguous word in a general context. An organ can be a musical instrument, but it can also be a part of an anatomy. This means that the word organ will co-occur with piano, but also to all other kinds of words related to human and animal biology. This is why they are less similar in the general model than in the domain one, because it is an ambiguous word in a general context.
+
+
+Similarity Between Album and Track
+Now let's see another similarity example between two other words album and track where track is an ambiguous word depending on the context.
+
+(.similarity musicians-model "album" "track")
+0.838570237159729
+(.similarity google-news-model "album" "track")
+0.18461625277996063
+As expected, because track is ambiguous, there is a big difference in terms of co-occurence probabilities depending on the context (domain-specific or general).
+
+
+Similarity Between Pianist and Violinist
+However, are domain-specific and general differences always the case? Let's take a look at two words that are domain specific and unambiguous: pianist and violinist.
+
+(.similarity musicians-model "pianist" "violinist")
+0.8497374653816223
+(.similarity google-news-model "pianist" "violinist")
+0.8616064190864563
+In this case, the similarity score between the two terms is almost the same. In both contexts (generals and domain specific), their co-occurrence is similar.
+
+
+Nearest Words
+Now let's look at the similarity between two distinct words in two new and distinct contexts. Let's take a look at a few words and see what other words occur most often with them.
+
+
+Music
+(.wordsNearest musicians-model ["music"] [] 20)
+music
+musical
+vocal
+orchestral
+voice
+dance.
+artistic
+widely
+romantic
+modern
+cabaret
+theatrical
+belongs
+opera
+genres.
+film
+middle_eastern
+songs.
+specialised
+genre
+
+
+(.wordsNearest google-news-model ["music"] [] 20)
+music
+classical_music
+jazz
+Music
+Without_Donny_Kirshner
+songs
+musicians
+tunes
+musical
+Logue_typed
+musics
+unplugged_acoustic
+funky_soulful
+includes_didgeridoo_riff
+soulful_melodies
+hip_hop
+_nova_samba
+bossa
+reggae
+jazz_ragtime
+
+
+One observation we can make is that the terms from the musicians model are more general than the ones from the general model.
+
+
+Track
+(.wordsNearest musicians-model ["track"] [] 20)
+track
+album
+released.
+titled
+debut
+spawned
+entitled
+track.
+latest
+hit.
+release
+week
+year.
+dania
+song
+summer_of_space_on_quiet
+positive
+airplay
+city_productions.
+tracks
+
+
+(.wordsNearest google-news-model ["track"] [] 20)
+track
+tracks
+Track
+racetrack
+www.southbostonspeedway.com
+cuppy
+#/#ths-mile
+horseshoe_shaped_section
+wagering_parlors
+levigated
+Infineon_raceway
+Tezgam_Express_heading
+#/##-mile_oval
+racing
+president_Brandon_Igdalsky
+paperclip_shaped
+cinder_track
+president_Gillian_Zucker
+2_#/#-mile_triangular
+Tapeta_surface
+
+
+As we know, track is ambiguous. The difference between these two sets of nearest related words is striking. There is a clear conceptual correlation in the musicians' domain-specific model. But in the general model, it is really going in all directions.
+
+
+Year
+Now let's take a look at a really general word: year
+
+(.wordsNearest musicians-model ["year"] [] 20)
+year
+grammy_award_for_best
+naacap
+year.
+grammy_award
+nominated
+rock_new_artist_clip
+music_award
+grammy_for_best
+category.
+song_of_the
+music_video_awards_best_pop
+ghantous.
+salvador_da_bahia.
+won
+so_intense
+entitled
+he_was_grammy
+year_and_recorded
+song
+
+
+(.wordsNearest google-news-model ["year"] [] 20)
+year
+month
+week
+months
+decade
+years
+summer
+year.The
+September
+weeks
+season
+June
+yaer
+weekend
+July
+January
+twoyears
+August
+threeyear
+October
+
+
+This one is quite interesting too. Both groups of words makes sense, but only in their respective contexts. With the musicians' model, year is mostly related to awards (like the Grammy Awards 2016), categories like "song of the year", etc.
+
+In the context of the general model, year is really related to time concepts: months, seasons, etc.
+
+
+Playing With Co-Occurrences Vectors
+Finally we will play with manipulating the co-occurrences vectors by manipulating them. A really popular word2vec equation is king - man + women = queen. What is happening under the hood with this equation is that we are adding and substracting the co-occurence "vectors" for each of these words, and we check the nearest word of the resulting co-occurence vector.
+
+Now, let's take a look at a few of these equations.
+
+
+Pianist + Renowned = ?
+(.wordsNearest musicians-model ["pianist" "renowned"] [] 10)
+renowned
+pianist
+teacher
+teacher.
+prolific
+educator.
+virtuoso
+violinist
+conductor
+composer
+
+
+(.wordsNearest google-news-model ["pianist" "renowned"] [] 10)
+renowned
+pianist
+pianist_composer
+jazz_pianist
+classical_pianists
+composer_pianist
+virtuoso_pianist
+renowned_cellist
+violinist
+trumpet_virtuoso
+
+
+These kinds of operations are also interesting. If we add the two co-occurrence vectors for pianist and renowned then we get that a teacher, an educator, a composer or a virtuoso is a renowned pianist.
+
+For unambiguous surface forms like pianist, then the two models score quite well. The difference between the two examples comes from the way the general training corpus has been created (pre-processed) compared to the musicians corpus.
+
+
+Metal + Death = ?
+(.wordsNearest musicians-model ["metal" "death"] [] 10)
+death
+metal
+thrash
+deathcore
+metalcore
+grindcore
+mathcore
+melodic
+present_labels_insideout
+gothic
+
+
+(.wordsNearest google-news-model ["metal" "death"] [] 10)
+death
+metal
+Tunstall_bled
+steel
+Death
+compressional_asphyxia
+untimely_death
+thallium_toxic
+metal_grindcore
+blackened_shards
+
+
+This example uses two quite general words with no apparent relationship between them. The results with the musicians' model are all the highly similar genre of music like trash metal, deathcore metal, etc.
+
+However with the general model, it is a mix of multiple unrelated concepts.
+
+
+Metal - Death + Smooth = ?
+Let's play some more with these equations. What if we want some kind of smooth metal?
+
+(.wordsNearest musicians-model ["metal" "smooth"] ["death"] 5)
+smooth
+funk
+soul
+disco
+daniel_håkansson_genres
+
+
+This one is also quite interesting. We substracted the death co-occurrence vector to the metal one, and then we added the smooth vector. What we end-up with is a bunch of music genres that are much smoother than death metal.
+
+(.wordsNearest google-news-model ["metal" "smooth"] ["death"] 5)
+smooth
+metal
+shredding_solos
+chromed_steel
+metallic
+In the case of the general model, we end-up with "smooth metal". The removal of the death vector has no effect on the results, probably since these are three ambiguous and really general terms.
+
+
+Relevance of the Use Case
+Of course, the likelihood that musicians are a domain of interest to most enterprises is low. However, this use case does have these implications:
+
+The speed and ease of creating domain-specific training corpuses for word2vec (and other corpus-based models)
+The ability to include other public and private text sources into the word2vec model (see, for example, how to link your own private datasets to KBpedia)
+To use such domain-specific training corpuses to establish similarity between local text documents or HTML web pages
+To combine with a topics analyzer to first tag text document using KBpedia reference concepts, and then inform or augment domain-specific training corpuses, and
+To enable the testing and refinement of different combinations of "seed" concepts to produce training corpuses with the desired set of similarity results.
+
+Conclusion
+As we saw, creating domain-specific training corpuses to use with word2vec can have a dramatic impact on the results and how results can be much more meaningful within the scope of that domain. Another advantage of a domain-specific training corpus is it creates create much smaller models. Smaller models are faster to generate, faster to download/upload, faster to query, and consume less memory.
+
+Of the concepts in KBpedia, roughly 47,000 of them correspond to types (or classes) of various sorts. These pre-determined slices are available across all needs and domains to generate such domain-specific corpuses. Further, KBpedia is designed for rapid incorporation of your own domain information to add further to this discriminatory power.
+
+
+
+KBpedia
+
+KBpedia exploits large-scale knowledge bases and semantic technologies for machine learning, data interoperability and mapping, and fact extraction and tagging.
+
+Latest News
+Open-source Baseline for KBpedia Now Available
+02/04/2019
+KBpedia is Now Open Source
+10/23/2018
+KBpedia v. 151 Released
+09/13/2017
+Other Resources
+ABOUT
+FAQ
+NEWS
+USE CASES
+DOCUMENTATION
+PRIVACY
+TERMS OF USE
+Contact Us
+c/o Cognonto Corp.
+380 Knowling Drive
+Coralville, IA 52241
+U.S.A.
+Voice: +1 319 621 5225
+2016-2019 © Cognonto Corp.Cognonto Corp. All Rights Reserved.
+
+
+
+
