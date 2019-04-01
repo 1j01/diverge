@@ -31,7 +31,22 @@ const query_providers = ()=> {
 	let path_strings = [];
 	for (let i = 0; i < providers.length; i++) {
 		const provider = providers[i];
-		path_strings = path_strings.concat(provider.query(input.value, input.selectionStart));
+		const provider_name = provider.name || "Provider";
+		let providerResults = provider.query(input.value, input.selectionStart);
+		if (!providerResults) {
+			console.error(`${provider_name} returned ${providerResults} instead of an array`);
+		} else if (!providerResults instanceof Array) {
+			console.error(`${provider_name} returned ${providerResults} instead of an array`);
+		} else {
+			providerResults = providerResults.filter((result)=> {
+				if (typeof result !== "string") {
+					console.error(`${provider_name} gave ${result} instead of a string for one of the paths`);
+					return false;
+				}
+				return true;
+			});
+			path_strings = path_strings.concat(providerResults);
+		}
 	}
 
 	let old_paths_left = paths;
