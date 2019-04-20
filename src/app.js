@@ -18,6 +18,11 @@ const input = document.getElementById("input");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+const setTextKeepingUndoHistory = (text)=> {
+	input.select();
+	document.execCommand("insertText", false, text);
+};
+
 let paths = [];
 
 const providers = [
@@ -320,6 +325,7 @@ function animate(t) {
 		// TODO: actually match paths together and show them branching off
 		// if (path.string.toLowerCase().indexOf(text.toLowerCase()) === 0) {
 		const matched = path.string.toLowerCase().indexOf(text.toLowerCase()) === 0;
+		path._visible = matched;
 		path.simulate(matched, place_y, upper_pos);
 		// ctx.rotate(0.04);
 		ctx.rotate(0.04 * (path.glyphs[0] && path.glyphs[0].alpha));
@@ -383,6 +389,20 @@ input.addEventListener("input", ()=> {
 	}catch(e){}
 	query_providers();
 });
+
+window.addEventListener("keydown", (e)=> {
+	switch (e.key) {
+		case "Tab":
+			const topPath = paths.find((path)=> path._visible);
+			if (topPath) {
+				setTextKeepingUndoHistory(topPath.string);
+			}
+			break;
+		default:
+			return; // don't prevent default
+	}
+	e.preventDefault();
+}, false);
 
 canvas.addEventListener("mousedown", (e)=> {
 	e.preventDefault();

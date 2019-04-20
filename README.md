@@ -101,9 +101,11 @@ Evaluators can be combined and weighted.
 
 ### Communities
 
-i think it could be a really  cool unique social experience
+i think it could be a really cool unique social experience
 
-branching off of peoples' writing and having them branch off of yours
+branching off of each other's writing
+
+sharing in the constraints for creative writing with a consistency across the collaboration
 
 a natural medium for nonlinear stories
 
@@ -185,6 +187,7 @@ I think this is less interesting for now.
 - [Your World of Text](https://www.yourworldoftext.com/) and [Our World of Text](https://ourworldoftext.com/)
 - [Dasher](http://www.bltt.org/software/dasher/), a text input method where you zoom and drill down into letters, weighted by how likely it thinks you are to want to use them from context
 - [rnn-writer](https://github.com/robinsloan/rnn-writer), a sentence autocompleter, which could be integrated into this project, via their [torch-rnn-server](https://github.com/robinsloan/torch-rnn-server), or even their hosted [text.bargains](https://text.bargains)
+- [gpt-2](https://github.com/openai/gpt-2), a newer text autocompleter
 
 ## Development
 
