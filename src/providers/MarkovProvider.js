@@ -1,11 +1,7 @@
 // import markov from "markov";
 import {pick} from "deck";
-// const markov = window.localStorage;
 
 function MarkovProvider({order, corpusText}){
-	// this.markov = markov(order);
-	// this.markov.seed(corpusText);
-
 	this.order = order; // the n in "ngrams:; 2 = digraphs, 3 = trigraphs
 	// this.ngrams = new Map(); // ngrams to counts
 	this.ngrams = {}; // ngrams to counts - TODO: test with words like "prototype" and "constructor"
@@ -19,6 +15,7 @@ function MarkovProvider({order, corpusText}){
 		// this.ngrams.set(ngram, this.ngrams.get(ngram) + 1);
 		this.ngrams[ngram] = (this.ngrams[ngram] || 0) + 1;
 	}
+	this.ngram_keys = Object.keys(this.ngrams);
 }
 
 MarkovProvider.prototype.continueText = function(current_text, length_to_add){
@@ -31,25 +28,27 @@ MarkovProvider.prototype.continueText = function(current_text, length_to_add){
 	// 	return "??? no key";
 	// }
 	// return current_text + (this.markov.next(key) || []).join(" ");
-
+	const target_length = current_text.length + length_to_add;
 	if (current_text.length < this.order) {
 		// TOmaybeDO: could find ngrams that start with part of the end of current_text
-		return current_text + pick(this.ngrams);
-	} else {
+		// also maybe don't go over the target length
+		current_text += pick(this.ngrams);
+	}
+	for (let i = 0; i < length_to_add && current_text.length < target_length; i++) {
 		const lastChars = current_text.slice(current_text.length - this.order + 1);
 		const nextCharsToWeights = {};
-		// Array.from(this.ngrams.keys())
-		Object.keys(this.ngrams)
+		this.ngram_keys
 			.filter((ngram)=> lastChars === ngram.slice(0, this.order - 1))
 			.forEach((ngram)=> {
 				// nextCharsToWeights[ngram.slice(this.order - 1)] = this.ngrams.get(ngram);
 				nextCharsToWeights[ngram.slice(this.order - 1)] = this.ngrams[ngram];
 			});
-		return current_text + (
+		current_text += (
 			pick(nextCharsToWeights) ||
 			pick(this.ngrams)
 		);
 	}
+	return current_text;
 }
 
 MarkovProvider.prototype.query = function(current_text, index){
