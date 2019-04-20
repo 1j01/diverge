@@ -28,7 +28,7 @@ let paths = [];
 const providers = [
 	new DatabaseProvider(),
 	new MarkovProvider({
-		order: 2,
+		order: 5,
 		corpusText,
 		// corpusText: `Let me show another prototype interface illustrating the two heuristics I've identified. This second prototype is intended to help us explore two-dimensional projectile motion. Although that may sound similar to the energy surface prototype – it's just classical mechanics in one more spatial dimension! – it's actually a very different subject, and the interface is, accordingly, very different. It's also more ambitious than the prototype for one-dimensional motion, in that I'll use it to attack a problem I didn't know how to solve before building the interface. As before, it's a rough sketch, and presumes comfort with basic mechanics and mathematics. Let's take a look*`
 	}),
@@ -51,6 +51,8 @@ const query_providers = ()=> {
 					console.error(`${provider_name} gave ${result} instead of a string for one of the paths`);
 					return false;
 				}
+				// TODO: keep metadata for debug / understanding
+				// result._provider_ = provider;
 				return true;
 			});
 			path_strings = path_strings.concat(providerResults);
@@ -324,7 +326,7 @@ function animate(t) {
 		// and/or visually indicate that case specifically somehow
 		// TODO: actually match paths together and show them branching off
 		// if (path.string.toLowerCase().indexOf(text.toLowerCase()) === 0) {
-		const matched = path.string.toLowerCase().indexOf(text.toLowerCase()) === 0;
+		const matched = path.string.toLowerCase().indexOf(text.toLowerCase()) === 0 && path.string !== text;
 		path._visible = matched;
 		path.simulate(matched, place_y, upper_pos);
 		// ctx.rotate(0.04);
