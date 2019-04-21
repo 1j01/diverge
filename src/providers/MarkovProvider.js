@@ -113,3 +113,15 @@ MarkovProvider.prototype.query = function(current_text, index){
 };
 
 export default MarkovProvider;
+
+export function MarkovSelfTextProvider({order}){
+	this.order = order;
+}
+
+MarkovSelfTextProvider.prototype.query = function(current_text, index){
+	// TODO: maybe continue from cursor (index)?
+	// current_text = current_text.slice(0, index);
+	const markov = new Markov(this.order);
+	markov.train(current_text);
+	return new Array(3).fill(0).map(()=> markov.continueText(current_text, 20));
+};

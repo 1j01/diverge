@@ -1,5 +1,5 @@
 import DatabaseProvider from "./providers/DatabaseProvider";
-import MarkovProvider from "./providers/MarkovProvider";
+import MarkovProvider, {MarkovSelfTextProvider} from "./providers/MarkovProvider";
 import OriginalJokeProvider from "./providers/OriginalJokeProvider";
 import "./app.css";
 /* eslint import/no-webpack-loader-syntax: off */
@@ -27,10 +27,13 @@ let paths = [];
 
 const providers = [
 	new DatabaseProvider(),
-	new MarkovProvider({
+	// new MarkovProvider({
+	// 	order: 5,
+	// 	corpusText,
+	// 	// corpusText: `Let me show another prototype interface illustrating the two heuristics I've identified. This second prototype is intended to help us explore two-dimensional projectile motion. Although that may sound similar to the energy surface prototype – it's just classical mechanics in one more spatial dimension! – it's actually a very different subject, and the interface is, accordingly, very different. It's also more ambitious than the prototype for one-dimensional motion, in that I'll use it to attack a problem I didn't know how to solve before building the interface. As before, it's a rough sketch, and presumes comfort with basic mechanics and mathematics. Let's take a look*`
+	// }),
+	new MarkovSelfTextProvider({
 		order: 5,
-		corpusText,
-		// corpusText: `Let me show another prototype interface illustrating the two heuristics I've identified. This second prototype is intended to help us explore two-dimensional projectile motion. Although that may sound similar to the energy surface prototype – it's just classical mechanics in one more spatial dimension! – it's actually a very different subject, and the interface is, accordingly, very different. It's also more ambitious than the prototype for one-dimensional motion, in that I'll use it to attack a problem I didn't know how to solve before building the interface. As before, it's a rough sketch, and presumes comfort with basic mechanics and mathematics. Let's take a look*`
 	}),
 	new OriginalJokeProvider(),
 ];
