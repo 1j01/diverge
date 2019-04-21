@@ -20,14 +20,13 @@ const normalizeWeights = (weights)=> {
 };
 
 const weightedSample = (normalizedWeights)=> {
-	var n = Math.random();
-	var threshold = 0;
-	var keys = Object.keys(normalizedWeights);
+	const n = Math.random();
+	const keys = Object.keys(normalizedWeights);
 	if (keys.length === 0) {
 		return;
 	}
-
-	for (var i = 0; i < keys.length; i++) {
+	let threshold = 0;
+	for (let i = 0; i < keys.length; i++) {
 		threshold += normalizedWeights[keys[i]];
 		if (n < threshold) {
 			return keys[i];
@@ -106,27 +105,27 @@ class Markov {
 	}
 }
 
-function MarkovProvider({order, corpusText}){
-	this.markov = new Markov(order);
-	this.markov.train(corpusText);
+export default class MarkovProvider {
+	constructor({order, corpusText}) {
+		this.markov = new Markov(order);
+		this.markov.train(corpusText);
+	}
+	query(current_text, index) {
+		// TODO: maybe continue from cursor (index)?
+		// current_text = current_text.slice(0, index);
+		return new Array(5).fill(0).map(()=> this.markov.continueText(current_text, 20));
+	}
 }
 
-MarkovProvider.prototype.query = function(current_text, index){
-	// TODO: maybe continue from cursor (index)?
-	// current_text = current_text.slice(0, index);
-	return new Array(5).fill(0).map(()=> this.markov.continueText(current_text, 20));
-};
-
-export default MarkovProvider;
-
-export function MarkovSelfTextProvider({order}){
-	this.order = order;
+export class MarkovSelfTextProvider {
+	constructor({order}) {
+		this.order = order;
+	}
+	query(current_text, index) {
+		const markov = new Markov(this.order);
+		markov.train(current_text);
+		// TODO: maybe continue from cursor (index)?
+		// current_text = current_text.slice(0, index);
+		return new Array(3).fill(0).map(()=> markov.continueText(current_text, 20));
+	}
 }
-
-MarkovSelfTextProvider.prototype.query = function(current_text, index){
-	// TODO: maybe continue from cursor (index)?
-	// current_text = current_text.slice(0, index);
-	const markov = new Markov(this.order);
-	markov.train(current_text);
-	return new Array(3).fill(0).map(()=> markov.continueText(current_text, 20));
-};

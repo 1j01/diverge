@@ -1,5 +1,5 @@
 
-var psuedo_db = [
+const psuedo_db = [
 	"Hello world!",
 	"That quick brown fox was jumping all around",
 	"The quick brown fox was jumping all around",
@@ -64,12 +64,8 @@ var psuedo_db = [
 	"]0301/134429.526:ERROR:exception_handler_server.cc(524)] ConnectNamedPipe: The pipe is being closed. (0xE8)"
 ];
 
-function DatabaseProvider(){
-	
+export default class DatabaseProvider {
+	query() {
+		return psuedo_db;
+	}
 }
-
-DatabaseProvider.prototype.query = function(){
-	return psuedo_db;
-};
-
-export default DatabaseProvider;
