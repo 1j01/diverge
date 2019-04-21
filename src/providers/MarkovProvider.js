@@ -35,71 +35,81 @@ const weightedSample = (normalizedWeights)=> {
 	}
 	throw new Error('Exceeded threshold. Something is very wrong.');
 };
-
-function MarkovProvider({order, corpusText}){
-	this.order = order; // the n in "ngrams"; 2 = digraphs, 3 = trigraphs
-	// this.ngrams = new Map(); // ngrams to counts
-	this.ngrams = {}; // ngrams to counts - TODO: test with words like "prototype" and "constructor"
-	const length = corpusText.length;
-
-	for (let index = 0; index < length - this.order; index++) {
-		const ngram = corpusText.slice(index, index + this.order);
-		// if (!this.ngrams.has(ngram)) {
-		// 	this.ngrams.set(ngram, 0);
-		// }
-		// this.ngrams.set(ngram, this.ngrams.get(ngram) + 1);
-		this.ngrams[ngram] = (this.ngrams[ngram] || 0) + 1;
+ 
+class Markov {
+	constructor(order) {
+		this.order = order; // the n in "ngrams"; 2 = digraphs, 3 = trigraphs
+		// this.ngrams = new Map(); // ngrams to counts
+		this.ngrams = {}; // ngrams to counts - TODO: test with words like "prototype" and "constructor"
 	}
-	this.ngram_keys = Object.keys(this.ngrams);
-	this.default_weights = normalizeWeights(this.ngrams);
+
+	train(corpusText) {
+		const length = corpusText.length;
+
+		for (let index = 0; index < length - this.order; index++) {
+			const ngram = corpusText.slice(index, index + this.order);
+			// if (!this.ngrams.has(ngram)) {
+			// 	this.ngrams.set(ngram, 0);
+			// }
+			// this.ngrams.set(ngram, this.ngrams.get(ngram) + 1);
+			this.ngrams[ngram] = (this.ngrams[ngram] || 0) + 1;
+		}
+		this.ngram_keys = Object.keys(this.ngrams);
+		this.default_weights = normalizeWeights(this.ngrams);
+	}
+
+	continueText(current_text, length_to_add) {
+		// const key = this.markov.search(current_text.slice(-this.order));
+		// const key = this.markov.search(current_text);
+		// const key = current_text.slice(-this.order);
+		// const key = current_text.split(/\s+/).slice(-this.order).join(" ");
+		// console.log(key);
+		// if (!key) {
+		// 	return "??? no key";
+		// }
+		// return current_text + (this.markov.next(key) || []).join(" ");
+		const target_length = current_text.length + length_to_add;
+		if (current_text.length < this.order) {
+			// TOmaybeDO: could find ngrams that start with part of the end of current_text
+			// also maybe don't go over the target length
+			current_text += weightedSample(this.default_weights);
+		}
+		for (let i = 0; i < length_to_add && current_text.length < target_length; i++) {
+			const lastChars = current_text.slice(current_text.length - this.order + 1);
+			const nextCharsToWeights = {};
+			this.ngram_keys
+				.filter((ngram)=> {
+					return lastChars === ngram.slice(0, this.order - 1);
+					// attempt at optimization:
+					// for (let ci = 0, end = this.order - 1; ci < end; ci++) {
+					// 	if (lastChars.charCodeAt(ci) !== ngram.charCodeAt(ci)) {
+					// 		return false
+					// 	}
+					// }
+					// return true;
+				})
+				.forEach((ngram)=> {
+					// nextCharsToWeights[ngram.slice(this.order - 1)] = this.ngrams.get(ngram);
+					nextCharsToWeights[ngram.slice(this.order - 1)] = this.ngrams[ngram];
+				});
+			current_text += (
+				weightedSample(normalizeWeights(nextCharsToWeights)) ||
+				weightedSample(this.default_weights)
+			);
+		}
+		return current_text;
+	}
 }
 
-MarkovProvider.prototype.continueText = function(current_text, length_to_add){
-	// const key = this.markov.search(current_text.slice(-this.order));
-	// const key = this.markov.search(current_text);
-	// const key = current_text.slice(-this.order);
-	// const key = current_text.split(/\s+/).slice(-this.order).join(" ");
-	// console.log(key);
-	// if (!key) {
-	// 	return "??? no key";
-	// }
-	// return current_text + (this.markov.next(key) || []).join(" ");
-	const target_length = current_text.length + length_to_add;
-	if (current_text.length < this.order) {
-		// TOmaybeDO: could find ngrams that start with part of the end of current_text
-		// also maybe don't go over the target length
-		current_text += weightedSample(this.default_weights);
-	}
-	for (let i = 0; i < length_to_add && current_text.length < target_length; i++) {
-		const lastChars = current_text.slice(current_text.length - this.order + 1);
-		const nextCharsToWeights = {};
-		this.ngram_keys
-			.filter((ngram)=> {
-				return lastChars === ngram.slice(0, this.order - 1);
-				// attempt at optimization:
-				// for (let ci = 0, end = this.order - 1; ci < end; ci++) {
-				// 	if (lastChars.charCodeAt(ci) !== ngram.charCodeAt(ci)) {
-				// 		return false
-				// 	}
-				// }
-				// return true;
-			})
-			.forEach((ngram)=> {
-				// nextCharsToWeights[ngram.slice(this.order - 1)] = this.ngrams.get(ngram);
-				nextCharsToWeights[ngram.slice(this.order - 1)] = this.ngrams[ngram];
-			});
-		current_text += (
-			weightedSample(normalizeWeights(nextCharsToWeights)) ||
-			weightedSample(this.default_weights)
-		);
-	}
-	return current_text;
+function MarkovProvider({order, corpusText}){
+	this.markov = new Markov(order);
+	this.markov.train(corpusText);
 }
 
 MarkovProvider.prototype.query = function(current_text, index){
 	// TODO: maybe continue from cursor (index)?
 	// current_text = current_text.slice(0, index);
-	return new Array(5).fill(0).map(()=> this.continueText(current_text, 20));
+	return new Array(5).fill(0).map(()=> this.markov.continueText(current_text, 20));
 };
 
 export default MarkovProvider;
