@@ -1,27 +1,26 @@
-const sumWeights = (weights)=> 
-	Object.values(weights).reduce(((sum, value)=> sum + value), 0);
+const sumWeights = (weights)=> {
+	let sum = 0;
+	for (const value of weights.values()) {
+		sum += value;
+	}
+	return sum;
+};
 
 const weightedSample = (weights, sumTotalWeight)=> {
 	const n = Math.random() * sumTotalWeight;
-	const keys = Object.keys(weights);
-	if (keys.length === 0) {
-		return;
-	}
 	let threshold = 0;
-	for (let i = 0; i < keys.length; i++) {
-		threshold += weights[keys[i]];
+	for (const [key, weightValue] of weights.entries()) {
+		threshold += weightValue;
 		if (n < threshold) {
-			return keys[i];
+			return key;
 		}
 	}
-	throw new Error('Exceeded threshold. Something is very wrong.');
 };
  
 export class Markov {
 	constructor(order) {
 		this.order = order; // the n in "ngrams"; 2 = digraphs, 3 = trigraphs
-		// this.ngrams = new Map(); // ngrams to counts
-		this.ngrams = {}; // ngrams to counts - TODO: use a Map instead, to handle ngrams like 'toString'
+		this.ngrams = new Map(); // ngrams to counts
 	}
 
 	train(corpusText) {
@@ -34,13 +33,9 @@ export class Markov {
 		const length = corpusText.length;
 		for (let index = 0; index < length - this.order; index++) {
 			const ngram = corpusText.slice(index, index + this.order);
-			// if (!this.ngrams.has(ngram)) {
-			// 	this.ngrams.set(ngram, 0);
-			// }
-			// this.ngrams.set(ngram, this.ngrams.get(ngram) + 1);
-			this.ngrams[ngram] = (this.ngrams[ngram] || 0) + 1;
+			this.ngrams.set(ngram, (this.ngrams.get(ngram) || 0) + 1);
 		}
-		this.ngram_keys = Object.keys(this.ngrams);
+		this.ngram_keys = Array.from(this.ngrams.keys());
 		this.sum_total_weight = sumWeights(this.ngrams);
 	}
 
@@ -62,7 +57,7 @@ export class Markov {
 		}
 		for (let i = 0; i < length_to_add && current_text.length < target_length; i++) {
 			const lastChars = current_text.slice(current_text.length - this.order + 1);
-			const nextCharsToWeights = {};
+			const nextCharsToWeights = new Map();
 			this.ngram_keys
 				.filter((ngram)=> {
 					return lastChars === ngram.slice(0, this.order - 1);
@@ -75,8 +70,7 @@ export class Markov {
 					// return true;
 				})
 				.forEach((ngram)=> {
-					// nextCharsToWeights[ngram.slice(this.order - 1)] = this.ngrams.get(ngram);
-					nextCharsToWeights[ngram.slice(this.order - 1)] = this.ngrams[ngram];
+					nextCharsToWeights.set(ngram.slice(this.order - 1), this.ngrams.get(ngram));
 				});
 			current_text += (
 				weightedSample(nextCharsToWeights, sumWeights(nextCharsToWeights)) ||

@@ -39,10 +39,10 @@ describe("Markov", ()=> {
 		markov.train("aaaaaaaaaaaaaaaaa");
 		expect(markov.continueText("the end.", 2)).toBe("the end.aa");
 	});
-	it.skip("handles ngrams like 'toString'", ()=> {
+	it("handles ngrams like 'toString'", ()=> {
 		const markov = new Markov("toString".length);
 		markov.train("foo.toString()"); // "prototype constructor __proto__ hasOwnProperty"
-		expect(markov.continueText("foo.toStri", 5)).toBe("foo.toString()");
+		expect(markov.continueText("foo.toStri", 4)).toBe("foo.toString()");
 	});
 });
 
