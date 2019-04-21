@@ -1,33 +1,15 @@
-const normalizeWeights = (weights)=> {
-	const keys = Object.keys(weights);
-	
-	const total = keys.reduce((sum, key)=> {
-		const x = weights[key];
-		// if (x < 0) {
-		// 	throw new Error('Negative weight encountered at key ' + key);
-		// } else if (typeof x !== 'number') {
-		// 	throw new TypeError('Number expected, got ' + typeof x);
-		// } else {
-		return sum + x;
-		// }
-	}, 0);
-	
-	const normalizedWeights = {};
-	keys.forEach((key)=> {
-		normalizedWeights[key] = weights[key] / total;
-	});
-	return normalizedWeights;
-};
+const sumWeights = (weights)=> 
+	Object.values(weights).reduce(((sum, value)=> sum + value), 0);
 
-const weightedSample = (normalizedWeights)=> {
-	const n = Math.random();
-	const keys = Object.keys(normalizedWeights);
+const weightedSample = (weights, sumTotalWeight)=> {
+	const n = Math.random() * sumTotalWeight;
+	const keys = Object.keys(weights);
 	if (keys.length === 0) {
 		return;
 	}
 	let threshold = 0;
 	for (let i = 0; i < keys.length; i++) {
-		threshold += normalizedWeights[keys[i]];
+		threshold += weights[keys[i]];
 		if (n < threshold) {
 			return keys[i];
 		}
@@ -59,7 +41,7 @@ class Markov {
 			this.ngrams[ngram] = (this.ngrams[ngram] || 0) + 1;
 		}
 		this.ngram_keys = Object.keys(this.ngrams);
-		this.default_weights = normalizeWeights(this.ngrams);
+		this.sum_total_weight = sumWeights(this.ngrams);
 	}
 
 	continueText(current_text, length_to_add) {
@@ -76,7 +58,7 @@ class Markov {
 		if (current_text.length < this.order) {
 			// TOmaybeDO: could find ngrams that start with part of the end of current_text
 			// also maybe don't go over the target length
-			current_text += weightedSample(this.default_weights);
+			current_text += weightedSample(this.ngrams, this.sum_total_weight);
 		}
 		for (let i = 0; i < length_to_add && current_text.length < target_length; i++) {
 			const lastChars = current_text.slice(current_text.length - this.order + 1);
@@ -97,8 +79,8 @@ class Markov {
 					nextCharsToWeights[ngram.slice(this.order - 1)] = this.ngrams[ngram];
 				});
 			current_text += (
-				weightedSample(normalizeWeights(nextCharsToWeights)) ||
-				weightedSample(this.default_weights)
+				weightedSample(nextCharsToWeights, sumWeights(nextCharsToWeights)) ||
+				weightedSample(this.ngrams, this.sum_total_weight)
 			);
 		}
 		return current_text;
