@@ -1,8 +1,43 @@
-// import markov from "markov";
-import {pick} from "deck";
+const normalizeWeights = (weights)=> {
+	const keys = Object.keys(weights);
+	
+	const total = keys.reduce((sum, key)=> {
+		const x = weights[key];
+		// if (x < 0) {
+		// 	throw new Error('Negative weight encountered at key ' + key);
+		// } else if (typeof x !== 'number') {
+		// 	throw new TypeError('Number expected, got ' + typeof x);
+		// } else {
+		return sum + x;
+		// }
+	}, 0);
+	
+	const normalizedWeights = {};
+	keys.forEach((key)=> {
+		normalizedWeights[key] = weights[key] / total;
+	});
+	return normalizedWeights;
+};
+
+const weightedSample = (normalizedWeights)=> {
+	var n = Math.random();
+	var threshold = 0;
+	var keys = Object.keys(normalizedWeights);
+	if (keys.length === 0) {
+		return;
+	}
+
+	for (var i = 0; i < keys.length; i++) {
+		threshold += normalizedWeights[keys[i]];
+		if (n < threshold) {
+			return keys[i];
+		}
+	}
+	throw new Error('Exceeded threshold. Something is very wrong.');
+};
 
 function MarkovProvider({order, corpusText}){
-	this.order = order; // the n in "ngrams:; 2 = digraphs, 3 = trigraphs
+	this.order = order; // the n in "ngrams"; 2 = digraphs, 3 = trigraphs
 	// this.ngrams = new Map(); // ngrams to counts
 	this.ngrams = {}; // ngrams to counts - TODO: test with words like "prototype" and "constructor"
 	const length = corpusText.length;
@@ -16,6 +51,7 @@ function MarkovProvider({order, corpusText}){
 		this.ngrams[ngram] = (this.ngrams[ngram] || 0) + 1;
 	}
 	this.ngram_keys = Object.keys(this.ngrams);
+	this.default_weights = normalizeWeights(this.ngrams);
 }
 
 MarkovProvider.prototype.continueText = function(current_text, length_to_add){
@@ -32,20 +68,29 @@ MarkovProvider.prototype.continueText = function(current_text, length_to_add){
 	if (current_text.length < this.order) {
 		// TOmaybeDO: could find ngrams that start with part of the end of current_text
 		// also maybe don't go over the target length
-		current_text += pick(this.ngrams);
+		current_text += weightedSample(this.default_weights);
 	}
 	for (let i = 0; i < length_to_add && current_text.length < target_length; i++) {
 		const lastChars = current_text.slice(current_text.length - this.order + 1);
 		const nextCharsToWeights = {};
 		this.ngram_keys
-			.filter((ngram)=> lastChars === ngram.slice(0, this.order - 1))
+			.filter((ngram)=> {
+				return lastChars === ngram.slice(0, this.order - 1);
+				// attempt at optimization:
+				// for (let ci = 0, end = this.order - 1; ci < end; ci++) {
+				// 	if (lastChars.charCodeAt(ci) !== ngram.charCodeAt(ci)) {
+				// 		return false
+				// 	}
+				// }
+				// return true;
+			})
 			.forEach((ngram)=> {
 				// nextCharsToWeights[ngram.slice(this.order - 1)] = this.ngrams.get(ngram);
 				nextCharsToWeights[ngram.slice(this.order - 1)] = this.ngrams[ngram];
 			});
 		current_text += (
-			pick(nextCharsToWeights) ||
-			pick(this.ngrams)
+			weightedSample(normalizeWeights(nextCharsToWeights)) ||
+			weightedSample(this.default_weights)
 		);
 	}
 	return current_text;
@@ -53,7 +98,8 @@ MarkovProvider.prototype.continueText = function(current_text, length_to_add){
 
 MarkovProvider.prototype.query = function(current_text, index){
 	// TODO: maybe continue from cursor (index)?
-	return new Array(50).fill(0).map(()=> this.continueText(current_text, 20));
+	// current_text = current_text.slice(0, index);
+	return new Array(5).fill(0).map(()=> this.continueText(current_text, 20));
 };
 
 export default MarkovProvider;
