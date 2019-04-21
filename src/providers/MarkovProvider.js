@@ -44,8 +44,13 @@ class Markov {
 	}
 
 	train(corpusText) {
+		if (corpusText.length > 0) {
+			corpusText += corpusText.slice(0, this.order); // wrap around
+			while (corpusText.length < this.order) { // handle too small training inputs
+				corpusText += corpusText.slice(0, this.order);
+			}
+		}
 		const length = corpusText.length;
-
 		for (let index = 0; index < length - this.order; index++) {
 			const ngram = corpusText.slice(index, index + this.order);
 			// if (!this.ngrams.has(ngram)) {
