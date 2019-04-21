@@ -17,11 +17,11 @@ const weightedSample = (weights, sumTotalWeight)=> {
 	throw new Error('Exceeded threshold. Something is very wrong.');
 };
  
-class Markov {
+export class Markov {
 	constructor(order) {
 		this.order = order; // the n in "ngrams"; 2 = digraphs, 3 = trigraphs
 		// this.ngrams = new Map(); // ngrams to counts
-		this.ngrams = {}; // ngrams to counts - TODO: test with words like "prototype" and "constructor"
+		this.ngrams = {}; // ngrams to counts - TODO: use a Map instead, to handle ngrams like 'toString'
 	}
 
 	train(corpusText) {
