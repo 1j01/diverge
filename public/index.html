@@ -26,6 +26,21 @@
     <title>Diverge</title>
   </head>
   <body>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      #canvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 1;
+      }
+      #input {
+        opacity: 0;
+      }
+    </style>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root">
       <input id="input" type="text" autofocus/>

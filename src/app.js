@@ -1,7 +1,6 @@
 import DatabaseProvider from "./providers/DatabaseProvider";
 import MarkovProvider, {MarkovSelfTextProvider} from "./providers/MarkovProvider";
 import OriginalJokeProvider from "./providers/OriginalJokeProvider";
-import "./app.css";
 /* eslint import/no-webpack-loader-syntax: off */
 import corpusText from "!!raw-loader!./corpus.txt";
 
