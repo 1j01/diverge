@@ -24,6 +24,19 @@ const setTextKeepingUndoHistory = (text)=> {
 };
 
 let paths = [];
+let autocompletion_index = 0;
+
+const cycleAutocompletePaths = (direction)=> {
+	autocompletion_index += direction;
+	if (autocompletion_index < 0) {
+		autocompletion_index = paths.filter((path)=> path._visible).length - 1;
+	}
+	if (autocompletion_index > paths.filter((path)=> path._visible).length - 1) {
+		autocompletion_index = 0;
+	}
+}
+const getSelectedAutocompletePath = ()=>
+	paths.filter((path)=> path._visible)[autocompletion_index];
 
 const providers = [
 	new DatabaseProvider(),
@@ -39,6 +52,8 @@ const providers = [
 ];
 
 const query_providers = ()=> {
+	autocompletion_index = 0;
+
 	let path_strings = [];
 	for (let i = 0; i < providers.length; i++) {
 		const provider = providers[i];
@@ -331,6 +346,7 @@ function animate(t) {
 		// if (path.string.toLowerCase().indexOf(text.toLowerCase()) === 0) {
 		const matched = path.string.toLowerCase().indexOf(text.toLowerCase()) === 0 && path.string !== text;
 		path._visible = matched;
+		path.autoCompleteHilight = getSelectedAutocompletePath() === path;
 		path.simulate(matched, place_y, upper_pos);
 		// ctx.rotate(0.04);
 		ctx.rotate(0.04 * (path.glyphs[0] && path.glyphs[0].alpha));
@@ -341,6 +357,12 @@ function animate(t) {
 			const glyph = path.glyphs[j];
 			const glyph_canvas = glyph.glyph_canvas;
 			ctx.globalAlpha = glyph.alpha;
+			if (path.autoCompleteHilight) {
+				ctx.save();
+				ctx.fillStyle = "rgba(255, 255, 0, 0.5)";
+				ctx.fillRect(glyph.x, glyph.y, glyph_canvas.glyph_width, line_height);
+				ctx.restore();
+			}
 			// ctx.rotate(0.002 * glyph.alpha);
 			// ctx.rotate(-0.002 * glyph.alpha * (1 + 0.1 * (i%10)));
 			// ctx.rotate(0.002 * glyph.alpha * (1 + 0.1 * (i%10)));
@@ -398,10 +420,16 @@ input.addEventListener("input", ()=> {
 window.addEventListener("keydown", (e)=> {
 	switch (e.key) {
 		case "Tab":
-			const topPath = paths.find((path)=> path._visible);
-			if (topPath) {
-				setTextKeepingUndoHistory(topPath.string);
+			const path = getSelectedAutocompletePath();
+			if (path) {
+				setTextKeepingUndoHistory(path.string);
 			}
+			break;
+		case "ArrowUp":
+			cycleAutocompletePaths(-1);
+			break;
+		case "ArrowDown":
+			cycleAutocompletePaths(+1);
 			break;
 		default:
 			return; // don't prevent default
