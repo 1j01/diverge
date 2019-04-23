@@ -262,10 +262,28 @@ Path.prototype.simulate = function(matched, place_y, selection_end_pos) {
 		// const damping = 0.2;
 		// const force = 1/20;
 		// const damping = 1;
-		const force = 1/2;
+		const force = 1/20;
 		const damping = 2;
 		glyph.x_vel += (glyph.x_to - glyph.x) * force;
 		glyph.y_vel += (glyph.y_to - glyph.y) * force;
+		const funForce = 22/2;
+		glyph.x_vel += Math.sin(j/8) * funForce;
+		glyph.y_vel += Math.cos(j/8) * funForce;
+		// const magneticForce = 1/2;
+		// paths.forEach((other_path)=> {
+		// 	if (other_path !== this) {
+		// 		other_path.glyphs.forEach((other_glyph)=> {
+		// 			if (other_glyph.char === glyph.char) {
+		// 				if (Math.abs(other_glyph.x - glyph.x) + Math.abs(other_glyph.y - glyph.y) < 10) {
+		// 					// const distance = Math.max(1, Math.hypot(other_glyph.y - glyph.y, other_glyph.x - glyph.x));
+		// 					const distance = Math.max(1, Math.hypot(other_glyph.y - glyph.y, other_glyph.x - glyph.x) ** 2);
+		// 					glyph.x_vel += (other_glyph.x - glyph.x) / distance * magneticForce;
+		// 					glyph.y_vel += (other_glyph.y - glyph.y) / distance * magneticForce;
+		// 				}
+		// 			}
+		// 		});
+		// 	}
+		// });
 		glyph.x_vel /= 1 + damping;
 		glyph.y_vel /= 1 + damping;
 		glyph.x += glyph.x_vel;
@@ -366,7 +384,7 @@ function animate(t) {
 		path.autoCompleteHilight = getSelectedAutocompletePath() === path;
 		path.simulate(matched, place_y, upper_pos);
 		// ctx.rotate(0.04);
-		ctx.rotate(0.04 * (path.glyphs[0] && path.glyphs[0].alpha));
+		// ctx.rotate(0.04 * (path.glyphs[0] && path.glyphs[0].alpha));
 		for (let j = 0; j < path.glyphs.length; j++) {
 			// ctx.rotate(0.001);
 			// ctx.save();
