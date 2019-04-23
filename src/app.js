@@ -1,6 +1,8 @@
 import DatabaseProvider from "./providers/DatabaseProvider";
 import MarkovProvider, {MarkovSelfTextProvider} from "./providers/MarkovProvider";
 import OriginalJokeProvider from "./providers/OriginalJokeProvider";
+import Assonance from "./evaluators/Assonance";
+import Lipogram from "./evaluators/Lipogram";
 /* eslint import/no-webpack-loader-syntax: off */
 import corpusText from "!!raw-loader!./corpus.txt";
 
@@ -111,6 +113,23 @@ const query_providers = ()=> {
 		const path = new Path(path_string);
 		paths.push(path);
 	}
+
+	const judgements = new Map();
+	paths.forEach((path)=> judgements.set(path, evaluate(path.string)));
+	paths.sort((path_a, path_b)=> judgements.get(path_b) - judgements.get(path_a));
+};
+
+const assonance = new Assonance({
+	maxDistance: 10,
+});
+// const lipogram = new Lipogram("e");
+// const topWordsOnly = new TopWordsOnly();
+
+const evaluate = (path_string)=> {
+	// if (!lipogram.evaluate(path_string)) {
+	// 	return 0;
+	// }
+	return assonance.evaluate(path_string);
 };
 
 let view_center_x = 0;
