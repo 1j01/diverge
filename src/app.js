@@ -256,7 +256,7 @@ Path.prototype.simulate = function(matched, place_y, selection_end_pos) {
 		glyph.alpha += (glyph.alpha_to - glyph.alpha) / 4;
 		// place_x += glyph_canvas.glyph_width;
 
-		const force = 1/50 * Math.sin(j);
+		const force = 1/50 * Math.sin(j/500);
 		const damping = 0.1;
 		// const force = 1/20;
 		// const damping = 0.2;
