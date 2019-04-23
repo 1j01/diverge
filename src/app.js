@@ -2,7 +2,7 @@ import DatabaseProvider from "./providers/DatabaseProvider";
 import MarkovProvider, {MarkovSelfTextProvider} from "./providers/MarkovProvider";
 import OriginalJokeProvider from "./providers/OriginalJokeProvider";
 import Assonance from "./evaluators/Assonance";
-import Lipogram from "./evaluators/Lipogram";
+// import Lipogram from "./evaluators/Lipogram";
 /* eslint import/no-webpack-loader-syntax: off */
 import corpusText from "!!raw-loader!./corpus.txt";
 

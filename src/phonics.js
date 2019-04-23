@@ -4,6 +4,7 @@ export function guessPhonemesForWord(word) {
 	word = word.toLowerCase();
 	// research actual letter-to-sound (LtoS) rules
 	// ideally find a module for this
+	// actually, a speech synth's rules would be good
 	const phonemes = [];
 	let inVowels = false;
 	for (let i = 0; i < word.length; i++) {
@@ -48,11 +49,11 @@ export function findOrGuessPhonemesForWord(word) {
 }
 
 export function toPhonemes(text) {
-	const words = text.toLowerCase().split(/[\s,./;:"\\\[\]!.\-_+|?]+/) // TODO: better tokenizer/splitter
+	const words = text.toLowerCase().split(/[\s,./;:"\\[\]!.\-_+|?]+/) // TODO: better tokenizer/splitter
 		.filter((word)=> word);
 	// return words.flatMap(getPhonemesForWord);
 	let phonemes = [];
-	words.map((word)=> {
+	words.forEach((word)=> {
 		phonemes = phonemes.concat(findOrGuessPhonemesForWord(word));
 	});
 	return phonemes;

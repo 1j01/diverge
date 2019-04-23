@@ -40,20 +40,9 @@ describe("Markov", ()=> {
 		expect(markov.continueText("the end.", 2)).toBe("the end.aa");
 	});
 	it("handles ngrams like 'toString'", ()=> {
+		// "prototype __proto__ constructor hasOwnProperty toString"
 		const markov = new Markov("toString".length);
-		markov.train("foo.toString()"); // "prototype constructor __proto__ hasOwnProperty"
-		expect(markov.continueText("foo.toStri", 4)).toBe("foo.toString()");
+		markov.train("foo.toString()");
+		expect(markov.continueText("foo.toStr", 5)).toBe("foo.toString()");
 	});
 });
-
-// const corpusText = "~!@#$%^&*()_+_)(*&^%$#@!~qwertyuiop";
-
-// describe("MarkovProvider", ()=> {
-// 	it("sdfgsdfgsdfg", ()=> {
-// 		const provider = new MarkovProvider({
-// 			order: 3,
-// 			corpusText,
-// 		});
-// 		expect(provider.query("~!@", 3)).toBe("");
-// 	});
-// });

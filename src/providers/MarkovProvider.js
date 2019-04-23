@@ -16,7 +16,7 @@ const weightedSample = (weights, sumTotalWeight)=> {
 		}
 	}
 };
- 
+
 export class Markov {
 	constructor(order) {
 		this.order = order; // the n in "ngrams"; 2 = digraphs, 3 = trigraphs
@@ -40,15 +40,6 @@ export class Markov {
 	}
 
 	continueText(current_text, length_to_add) {
-		// const key = this.markov.search(current_text.slice(-this.order));
-		// const key = this.markov.search(current_text);
-		// const key = current_text.slice(-this.order);
-		// const key = current_text.split(/\s+/).slice(-this.order).join(" ");
-		// console.log(key);
-		// if (!key) {
-		// 	return "??? no key";
-		// }
-		// return current_text + (this.markov.next(key) || []).join(" ");
 		const target_length = current_text.length + length_to_add;
 		if (current_text.length < this.order) {
 			// TOmaybeDO: could find ngrams that start with part of the end of current_text
